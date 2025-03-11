@@ -1,92 +1,67 @@
 
-import React, { useRef, useEffect, useState } from 'react';
-import { useFrame, useLoader, extend } from '@react-three/fiber';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import React, { useRef, useEffect } from 'react';
+import { useFrame, useLoader } from '@react-three/fiber';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import * as THREE from 'three';
 import ScreamShaderMaterial from './ScreamShaderMaterial';
 
-// Register the custom shader
-extend({ ScreamShaderMaterial });
-
-interface BrainProps {
-  onPositionChange?: (position: [number, number, number], rotation: [number, number, number], scale: number) => void;
-}
-
-const Brain: React.FC<BrainProps> = ({ onPositionChange }) => {
+const Brain = () => {
   const brainRef = useRef<THREE.Group>();
-  const gltf = useLoader(GLTFLoader, './brainBBBBB.glb');
-  const [shaderMaterialRef] = useState(() => new ScreamShaderMaterial());
-  
-  // Updated values based on user's preferred position
-  const basePosition: [number, number, number] = [0, 0.97, 0];
-  const baseRotation: [number, number, number] = [0, 0, 0];
-  const baseScale = 3.43;
-  
-  // Apply shader material to brain model
-  useEffect(() => {
-    if (brainRef.current) {
-      console.log("Applying ScreamShaderMaterial to brain model");
-      
-      brainRef.current.traverse((child) => {
-        if (child instanceof THREE.Mesh) {
-          child.material = shaderMaterialRef;
-          console.log("Applied ScreamShaderMaterial to mesh:", child.name);
-        }
-      });
-    }
-  }, [shaderMaterialRef]);
+  const materialRef = useRef<any>();
+  const gltf = useLoader(GLTFLoader, '/brainBBBBB.glb');
   
   // Animation loop
   useFrame(({ clock }) => {
+    if (materialRef.current) {
+      materialRef.current.uniforms.time.value = clock.getElapsedTime();
+      materialRef.current.uniforms.seed.value = Math.sin(clock.getElapsedTime() / 3) * 3;
+      
+      // Animate color with more variance
+      const r = 0.5 + 0.5 * Math.sin(clock.getElapsedTime() / 7);
+      const g = 0.5 + 0.5 * Math.sin(clock.getElapsedTime() / 8);
+      const b = 0.5 + 0.5 * Math.sin(clock.getElapsedTime() / 5);
+      materialRef.current.uniforms.color.value.set(r, g, b);
+      
+      // Modify scale value for noise pattern size
+      materialRef.current.uniforms.scale.value = 1.0 + 0.2 * Math.sin(clock.getElapsedTime() / 10);
+    }
+    
     if (brainRef.current) {
-      const time = clock.getElapsedTime();
-      
-      // Update shader uniforms
-      if (shaderMaterialRef.uniforms) {
-        shaderMaterialRef.uniforms.time.value = time;
-        shaderMaterialRef.uniforms.seed.value = Math.sin(time * 0.1) * 0.5 + 0.5;
-      }
-      
       // Simple rotation
       brainRef.current.rotation.y += 0.003;
       
       // Floating animation
-      brainRef.current.position.y = basePosition[1] + Math.sin(time * 0.5) * 0.2;
+      const time = clock.getElapsedTime();
+      brainRef.current.position.y = 1 + Math.sin(time * 0.5) * 0.2;
       
       // Breathing animation
-      const breathScale = baseScale + Math.sin(time * 0.8) * 0.1;
-      brainRef.current.scale.set(breathScale, breathScale, breathScale);
-      
-      // Call the callback with current position and rotation
-      if (onPositionChange) {
-        onPositionChange(
-          [
-            brainRef.current.position.x, 
-            brainRef.current.position.y, 
-            brainRef.current.position.z
-          ],
-          [
-            brainRef.current.rotation.x, 
-            brainRef.current.rotation.y, 
-            brainRef.current.rotation.z
-          ],
-          breathScale
-        );
-      }
+      const breathScale = 1 + Math.sin(time * 0.8) * 0.02;
+      brainRef.current.scale.set(4 * breathScale, 4 * breathScale, 4 * breathScale);
     }
   });
-
-  // Debug logging
-  console.log("Brain model loaded, object count:", gltf.scene.children.length);
+  
+  // Apply shader material to all brain meshes
+  useEffect(() => {
+    if (brainRef.current) {
+      // Create a single instance of the shader material
+      const shaderMaterial = new ScreamShaderMaterial();
+      materialRef.current = shaderMaterial;
+      
+      // Apply to all meshes in the model
+      brainRef.current.traverse((child) => {
+        if (child instanceof THREE.Mesh) {
+          child.material = shaderMaterial;
+        }
+      });
+    }
+  }, []);
 
   return (
     <primitive 
       object={gltf.scene.clone()} 
       ref={brainRef} 
-      position={basePosition} 
-      rotation={baseRotation}
-      scale={[baseScale, baseScale, baseScale]} 
-      name="Brain"
+      position={[0, 1, 0]} 
+      scale={[4, 4, 4]} 
     />
   );
 };

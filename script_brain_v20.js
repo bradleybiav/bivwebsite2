@@ -5,6 +5,9 @@
 let scene, camera, renderer, controls;
 let brain = null;
 let dotCloud = null;
+let mixer = null;
+let clock = new THREE.Clock();
+let loadingManager = null;
 
 // Initialize and start animation
 function init() {
@@ -33,8 +36,8 @@ function init() {
   directionalLight.position.set(1, 1, 1);
   scene.add(directionalLight);
   
-  // Create colorful brain sphere
-  createBrainSphere();
+  // Load 3D brain model
+  loadBrainModel();
   
   // Create dot cloud background
   createDotCloud();
@@ -48,8 +51,73 @@ function init() {
   console.log("Initialization complete");
 }
 
-// Create a colorful brain sphere
+// Load 3D brain model from GLB file
+function loadBrainModel() {
+  // Show loading progress
+  loadingManager = new THREE.LoadingManager();
+  loadingManager.onProgress = function(url, itemsLoaded, itemsTotal) {
+    console.log('Loading model: ' + Math.round(itemsLoaded / itemsTotal * 100) + '%');
+  };
+  
+  // Create a GLTFLoader to load the model
+  const loader = new THREE.GLTFLoader(loadingManager);
+  
+  // Load the brain model
+  loader.load(
+    'brainBBBBB.glb',  // Path to the model
+    function(gltf) {
+      // Model loaded successfully
+      brain = gltf.scene;
+      
+      // Scale the brain to a reasonable size
+      brain.scale.set(1.5, 1.5, 1.5);
+      
+      // Position the brain in the center
+      brain.position.set(0, 0, 0);
+      
+      // Make the brain emissive for a glowing effect
+      brain.traverse(function(child) {
+        if (child.isMesh) {
+          // Update material to be more colorful and glowing
+          child.material = new THREE.MeshPhongMaterial({
+            color: 0xff00ff,
+            emissive: 0x440044,
+            specular: 0xffffff,
+            shininess: 100,
+            transparent: true,
+            opacity: 0.9
+          });
+        }
+      });
+      
+      // Add the brain to the scene
+      scene.add(brain);
+      console.log("Brain model loaded and added to scene");
+      
+      // Set up animation mixer if the model has animations
+      if (gltf.animations && gltf.animations.length) {
+        mixer = new THREE.AnimationMixer(brain);
+        const action = mixer.clipAction(gltf.animations[0]);
+        action.play();
+        console.log("Brain animations set up");
+      }
+    },
+    // Progress callback
+    function(xhr) {
+      console.log("Loading brain model: " + (xhr.loaded / xhr.total * 100) + "% loaded");
+    },
+    // Error callback
+    function(error) {
+      console.error("Error loading brain model:", error);
+      // Fallback to creating a brain sphere if model fails to load
+      createBrainSphere();
+    }
+  );
+}
+
+// Create a colorful brain sphere (fallback if model loading fails)
 function createBrainSphere() {
+  console.log("Creating fallback brain sphere");
   const geometry = new THREE.SphereGeometry(1, 32, 32);
   const material = new THREE.MeshPhongMaterial({
     color: 0xff00ff,
@@ -63,7 +131,7 @@ function createBrainSphere() {
   brain = new THREE.Mesh(geometry, material);
   brain.position.set(0, 0, 0);
   scene.add(brain);
-  console.log("Brain sphere created");
+  console.log("Brain sphere created as fallback");
 }
 
 function createDotCloud() {
@@ -115,18 +183,31 @@ function createDotCloud() {
 function animate() {
   requestAnimationFrame(animate);
   
-  // Update brain material colors
+  // Update animations if mixer exists
+  if (mixer) {
+    mixer.update(clock.getDelta());
+  }
+  
+  // Update brain colors and rotation if it exists
   if (brain) {
     brain.rotation.y += 0.003;
     
-    // Animate brain colors
-    const time = Date.now() * 0.001;
-    const r = Math.sin(time * 0.5) * 0.5 + 0.5;
-    const g = Math.sin(time * 0.3) * 0.5 + 0.5;
-    const b = Math.sin(time * 0.2) * 0.5 + 0.5;
-    
-    brain.material.color.setRGB(r, g, b);
-    brain.material.emissive.setRGB(r * 0.2, g * 0.2, b * 0.2);
+    // Animate brain colors if it has materials to update
+    brain.traverse(function(child) {
+      if (child.isMesh) {
+        const time = Date.now() * 0.001;
+        const r = Math.sin(time * 0.5) * 0.5 + 0.5;
+        const g = Math.sin(time * 0.3) * 0.5 + 0.5;
+        const b = Math.sin(time * 0.2) * 0.5 + 0.5;
+        
+        if (child.material) {
+          child.material.color.setRGB(r, g, b);
+          if (child.material.emissive) {
+            child.material.emissive.setRGB(r * 0.2, g * 0.2, b * 0.2);
+          }
+        }
+      }
+    });
   }
   
   // Update dot cloud rotation

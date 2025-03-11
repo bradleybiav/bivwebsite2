@@ -6,7 +6,6 @@ import { setupScene } from './scene.js';
 import { loadBrainModel } from './brain.js';
 import { createSphereParticles } from './particles.js';
 import { animate } from './animation.js';
-import { createReflectionEffect } from './reflection.js';
 
 // Global variables
 let scene, camera, renderer, controls;
@@ -14,7 +13,6 @@ let brain = null;
 let dotCloud = null;
 let mixer = null;
 let clock = new THREE.Clock();
-let reflectionGroup = null;
 
 // Initialize and start animation
 function init() {
@@ -27,9 +25,6 @@ function init() {
   renderer = sceneSetup.renderer;
   controls = sceneSetup.controls;
   
-  // Create reflection effect
-  reflectionGroup = createReflectionEffect(scene);
-  
   // Load 3D brain model
   loadBrainModel(scene, (loadedBrain) => {
     brain = loadedBrain;
@@ -38,7 +33,7 @@ function init() {
     dotCloud = createSphereParticles(scene);
     
     // Start animation loop
-    animate(brain, dotCloud, mixer, clock, renderer, scene, camera, reflectionGroup);
+    animate(brain, dotCloud, mixer, clock, renderer, scene, camera);
   });
   
   console.log("Initialization complete");

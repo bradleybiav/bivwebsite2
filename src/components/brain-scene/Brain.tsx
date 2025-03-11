@@ -6,8 +6,9 @@ import * as THREE from 'three';
 import ScreamShaderMaterial from './ScreamShaderMaterial';
 
 const Brain = () => {
-  // Define base position, rotation and scale as requested
-  const basePosition: [number, number, number] = [0, 0.97, 0];
+  // Define orbit parameters
+  const orbitRadius = 10; // Distance from center
+  const basePosition: [number, number, number] = [0, 0.97, 0]; // Initial position
   const baseRotation: [number, number, number] = [0, 0, 0];
   const baseScale = 3.43;
 
@@ -32,12 +33,22 @@ const Brain = () => {
     }
     
     if (brainRef.current) {
-      // Increased rotation speed by 65%
-      brainRef.current.rotation.y += 0.003 * 1.65;
-      
-      // Floating animation based on the basePosition
+      // Calculate orbit position
       const time = clock.getElapsedTime();
+      const speed = 0.003 * 1.65; // Keep the same rotation speed
+      const angle = time * speed;
+      
+      // Calculate new position in orbit
+      const x = Math.sin(angle) * orbitRadius;
+      const z = Math.cos(angle) * orbitRadius;
+      
+      // Set position (maintain y value for vertical floating)
+      brainRef.current.position.x = x;
+      brainRef.current.position.z = z;
       brainRef.current.position.y = basePosition[1] + Math.sin(time * 0.5) * 0.2;
+      
+      // Make brain always face center of orbit
+      brainRef.current.rotation.y = angle + Math.PI; // Add PI to face the center
       
       // Breathing animation based on the baseScale
       const breathScale = 1 + Math.sin(time * 0.8) * 0.02;
@@ -62,11 +73,16 @@ const Brain = () => {
     }
   }, []);
 
+  // Starting position needs to be on the orbit path
+  const initialX = Math.sin(0) * orbitRadius;
+  const initialZ = Math.cos(0) * orbitRadius;
+  const initialPosition: [number, number, number] = [initialX, basePosition[1], initialZ];
+
   return (
     <primitive 
       object={gltf.scene.clone()} 
       ref={brainRef} 
-      position={basePosition} 
+      position={initialPosition} 
       rotation={baseRotation}
       scale={[baseScale, baseScale, baseScale]} 
     />

@@ -19,7 +19,7 @@ body {
     color: white;
     text-align: center; /* Center the text */
     white-space: nowrap; /* Prevent the text from wrapping to multiple lines */
-    z-index: 10; /* Place the text above background but below some dots */
+    z-index: 0; /* Place the text behind dots but in front of the background */
 }
 
 /* Mobile-specific styles */

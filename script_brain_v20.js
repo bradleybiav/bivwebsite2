@@ -17,7 +17,7 @@ function init() {
   
   // Setup camera
   camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-  camera.position.set(0, 0, 3);
+  camera.position.set(0, 0, 5);
   camera.lookAt(scene.position);
   
   // Setup renderer
@@ -41,7 +41,7 @@ function init() {
   // Create dot cloud background
   createDotCloud();
   
-  // Load the brain model
+  // Load the brain model with scream texture
   loadBrainModel();
   
   // Handle window resize
@@ -125,28 +125,33 @@ function loadBrainModel() {
     brain.traverse((child) => {
       if (child.isMesh) {
         try {
-          if (typeof tsl !== 'undefined' && tsl.scream) {
+          if (tsl && tsl.scream) {
             console.log("Applying TSL Scream texture to brain");
             
             // Create a material with the Scream texture
-            if (THREE.MeshStandardNodeMaterial) {
-              // If we have node materials available
-              const screamTexture = new tsl.scream(screamOptions);
-              child.material = new THREE.MeshStandardNodeMaterial({
-                colorNode: screamTexture
-              });
-            } else {
-              // Fallback to standard material with scream as a map
-              const material = new THREE.MeshStandardMaterial({
-                roughness: 0.4,
-                metalness: 0.6
-              });
-              
-              const screamTexture = new tsl.scream(screamOptions);
+            const material = new THREE.MeshStandardMaterial({
+              roughness: 0.4,
+              metalness: 0.6
+            });
+            
+            const screamTexture = new tsl.scream(screamOptions);
+            
+            // Apply the texture to the material
+            if (screamTexture.setMaterial) {
               screamTexture.setMaterial(material);
+            } else {
+              console.warn("setMaterial method not available on screamTexture");
               
-              child.material = material;
+              // Try alternative method if supported
+              if (THREE.MeshStandardNodeMaterial && screamTexture.getNode) {
+                child.material = new THREE.MeshStandardNodeMaterial({
+                  colorNode: screamTexture
+                });
+                return;
+              }
             }
+            
+            child.material = material;
           } else {
             // Fallback to a colorful material if TSL is not available
             console.log("Using fallback material for brain");

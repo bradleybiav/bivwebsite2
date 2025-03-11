@@ -16,19 +16,6 @@
     <title>Brain in a Vat</title>
     <link rel="stylesheet" href="styles_brain_v20.css">
     <link rel="icon" href="favicon_vat_transparent_final_2.ico" type="image/x-icon">
-    
-    <!-- Add ES Module Shims for TSL support -->
-    <script async src="https://ga.jspm.io/npm:es-module-shims@1.8.0/dist/es-module-shims.js"></script>
-    <script type="importmap">
-      {
-        "imports": {
-          "three": "https://cdn.jsdelivr.net/npm/three@0.171.0/build/three.min.js",
-          "three/tsl": "https://cdn.jsdelivr.net/npm/three@0.171.0/build/three.tsl.min.js",
-          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.171.0/examples/jsm/",
-          "tsl-textures/": "https://cdn.jsdelivr.net/npm/tsl-textures@1.5.0/src/"
-        }
-      }
-    </script>
 </head>
 <body>
     <!-- Three.js will create canvas elements -->
@@ -44,9 +31,9 @@
     <script src="https://cdn.jsdelivr.net/npm/fflate@0.7.3/umd/fflate.min.js"></script>
     
     <!-- Include additional Three.js components -->
-    <script src="https://cdn.jsdelivr.net/npm/three@0.171.0/examples/js/controls/OrbitControls.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.171.0/examples/js/loaders/GLTFLoader.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.171.0/examples/js/loaders/EXRLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.171.0/examples/jsm/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.171.0/examples/jsm/loaders/GLTFLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.171.0/examples/jsm/loaders/EXRLoader.js"></script>
     
     <!-- Include Three.js TSL library -->
     <script src="https://cdn.jsdelivr.net/npm/three@0.171.0/build/three.tsl.min.js"></script>

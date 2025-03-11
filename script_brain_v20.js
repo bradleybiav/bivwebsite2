@@ -6,6 +6,7 @@ let scene, camera, renderer, controls;
 let brain = null;
 let dotCloud = null;
 let toggle = true;
+let screamOptions = null;
 
 // Color change function
 function triggerColorChange() {
@@ -32,6 +33,16 @@ function triggerColorChange() {
         dot.material.color.set(colors[colorIndex]);
       });
     }
+    
+    // Update Scream texture color if available
+    if (screamOptions && screamOptions.color) {
+      const newColor = new THREE.Color(
+        Math.random(), 
+        Math.random(), 
+        Math.random()
+      );
+      screamOptions.color.value.copy(newColor);
+    }
   } else {
     // Switch back to black/white
     link.style.color = '#ffffff'; // Text to white
@@ -43,6 +54,12 @@ function triggerColorChange() {
         const colorIndex = Math.floor(Math.random() * colors.length);
         dot.material.color.set(colors[colorIndex]);
       });
+    }
+    
+    // Reset Scream texture color if available
+    if (screamOptions && screamOptions.color) {
+      const defaultColor = new THREE.Color(0.6, 0.2, 0.8); // Purple-ish
+      screamOptions.color.value.copy(defaultColor);
     }
   }
   
@@ -121,10 +138,33 @@ function createDotCloud() {
   return dotCloud;
 }
 
-// Load brain model with shader effect similar to XJrMYyV
+// Load brain model with TSL Scream texture
 function loadBrainModel() {
   // Set up loader
   const loader = new THREE.GLTFLoader();
+  
+  // Try to access tsl-textures if it exists
+  if (typeof tsl !== 'undefined' && tsl.scream) {
+    console.log("TSL Textures is available!");
+    
+    // Create Scream texture options with uniforms
+    try {
+      // Create options for Scream texture with uniform values
+      screamOptions = {
+        scale: 1,
+        variety: 1,
+        color: { value: new THREE.Color(0.6, 0.2, 0.8) }, // Purple-ish
+        background: new THREE.Color(0.2, 0.1, 0.3), // Dark purple
+        seed: { value: 0 }
+      };
+      
+      console.log("Scream options created:", screamOptions);
+    } catch (e) {
+      console.error("Error creating scream options:", e);
+    }
+  } else {
+    console.warn("TSL Textures not available. Will use fallback material.");
+  }
   
   // Load the brain model
   loader.load('brainBBBBB.glb', function(gltf) {
@@ -135,52 +175,47 @@ function loadBrainModel() {
     brain.scale.set(0.5, 0.5, 0.5);
     brain.position.set(0, 0, 0);
     
-    // Apply shader material to brain
+    // Apply material to brain
     brain.traverse((child) => {
       if (child.isMesh) {
-        // Create a custom shader material similar to the CodePen example
-        const vertexShader = `
-          varying vec2 vUv;
-          varying vec3 vPosition;
-          
-          void main() {
-            vUv = uv;
-            vPosition = position;
-            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        try {
+          if (typeof tsl !== 'undefined' && tsl.scream) {
+            // Create standard material with Scream texture
+            console.log("Applying TSL Scream texture to brain");
+            
+            // Create a standard material
+            const material = new THREE.MeshStandardMaterial({
+              roughness: 0.4,
+              metalness: 0.6
+            });
+            
+            // Apply the Scream texture
+            const screamTexture = new tsl.scream(screamOptions);
+            screamTexture.setMaterial(material);
+            
+            child.material = material;
+          } else {
+            // Fallback to a colorful material if TSL is not available
+            console.log("Using fallback material for brain");
+            child.material = new THREE.MeshStandardMaterial({
+              color: new THREE.Color(0.8, 0.2, 0.6),
+              roughness: 0.4,
+              metalness: 0.6
+            });
           }
-        `;
-        
-        const fragmentShader = `
-          uniform float time;
-          varying vec2 vUv;
-          varying vec3 vPosition;
           
-          void main() {
-            vec3 pos = vPosition * 2.0;
-            float pattern = sin(pos.x * 10.0 + time) * cos(pos.y * 10.0 + time) * sin(pos.z * 10.0 + time);
-            
-            vec3 color1 = vec3(0.8, 0.2, 0.6); // Pink/purple
-            vec3 color2 = vec3(0.2, 0.8, 0.9); // Blue/cyan
-            
-            vec3 finalColor = mix(color1, color2, pattern * 0.5 + 0.5);
-            
-            gl_FragColor = vec4(finalColor, 1.0);
-          }
-        `;
-        
-        // Create the shader material
-        const shaderMaterial = new THREE.ShaderMaterial({
-          uniforms: {
-            time: { value: 0.0 }
-          },
-          vertexShader: vertexShader,
-          fragmentShader: fragmentShader,
-          side: THREE.DoubleSide
-        });
-        
-        child.material = shaderMaterial;
-        child.castShadow = true;
-        child.receiveShadow = true;
+          child.castShadow = true;
+          child.receiveShadow = true;
+        } catch (e) {
+          console.error("Error applying material to brain:", e);
+          
+          // Use a fallback material if there's an error
+          child.material = new THREE.MeshStandardMaterial({
+            color: new THREE.Color(0.8, 0.2, 0.6),
+            roughness: 0.4,
+            metalness: 0.6
+          });
+        }
       }
     });
     
@@ -243,14 +278,11 @@ function handleResize() {
   });
 }
 
-// Update shader time uniform
-function updateShaderTime() {
-  if (brain) {
-    brain.traverse((child) => {
-      if (child.isMesh && child.material.uniforms && child.material.uniforms.time) {
-        child.material.uniforms.time.value = performance.now() / 1000;
-      }
-    });
+// Update scream texture animation
+function updateScreamAnimation() {
+  if (screamOptions && screamOptions.seed) {
+    // Animate the seed parameter for movement
+    screamOptions.seed.value = (performance.now() / 3000) % 100;
   }
 }
 
@@ -260,7 +292,7 @@ function animate() {
   
   if (brain) {
     brain.rotation.y += 0.002;
-    updateShaderTime();
+    updateScreamAnimation();
   }
   
   if (dotCloud) {

@@ -3,7 +3,6 @@ import React from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, PerspectiveCamera } from '@react-three/drei';
 import Brain from './brain-scene/Brain';
-import Ground from './brain-scene/Ground';
 
 // Main scene component
 const BrainScene = () => {

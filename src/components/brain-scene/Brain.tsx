@@ -16,11 +16,14 @@ const Brain = () => {
       materialRef.current.uniforms.time.value = clock.getElapsedTime();
       materialRef.current.uniforms.seed.value = Math.sin(clock.getElapsedTime() / 3) * 3;
       
-      // Animate color
+      // Animate color with more variance
       const r = 0.5 + 0.5 * Math.sin(clock.getElapsedTime() / 7);
       const g = 0.5 + 0.5 * Math.sin(clock.getElapsedTime() / 8);
       const b = 0.5 + 0.5 * Math.sin(clock.getElapsedTime() / 5);
       materialRef.current.uniforms.color.value.set(r, g, b);
+      
+      // Modify scale value for noise pattern size
+      materialRef.current.uniforms.scale.value = 1.0 + 0.2 * Math.sin(clock.getElapsedTime() / 10);
     }
     
     if (brainRef.current) {
@@ -37,14 +40,16 @@ const Brain = () => {
     }
   });
   
-  // Clone the model to apply our custom material
+  // Clone the model to apply our custom material to ALL brain meshes
   useEffect(() => {
     if (brainRef.current) {
+      const shaderMaterial = new ScreamShaderMaterial();
+      materialRef.current = shaderMaterial;
+      
+      // Apply the shader material to ALL meshes in the brain model
       brainRef.current.traverse((child) => {
         if (child instanceof THREE.Mesh) {
-          const screamMaterial = new ScreamShaderMaterial();
-          materialRef.current = screamMaterial;
-          child.material = screamMaterial;
+          child.material = shaderMaterial;
         }
       });
     }

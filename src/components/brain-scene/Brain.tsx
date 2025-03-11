@@ -11,7 +11,7 @@ interface BrainProps {
 
 const Brain: React.FC<BrainProps> = ({ onPositionChange }) => {
   const brainRef = useRef<THREE.Group>();
-  const materialRef = useRef<any>();
+  const materialRef = useRef<ScreamShaderMaterial>();
   const gltf = useLoader(GLTFLoader, '/brainBBBBB.glb');
   
   // Updated values based on user's preferred position
@@ -19,9 +19,25 @@ const Brain: React.FC<BrainProps> = ({ onPositionChange }) => {
   const baseRotation: [number, number, number] = [0, 0, 0];
   const baseScale = 3.43;
   
+  // Create shader material outside the animation loop
+  useEffect(() => {
+    if (brainRef.current) {
+      const shaderMaterial = new ScreamShaderMaterial();
+      materialRef.current = shaderMaterial;
+      
+      brainRef.current.traverse((child) => {
+        if (child instanceof THREE.Mesh) {
+          // Apply the shader material to each mesh
+          child.material = shaderMaterial;
+        }
+      });
+    }
+  }, []);
+  
   // Animation loop
   useFrame(({ clock }) => {
     if (materialRef.current) {
+      // Update shader uniforms for animation
       materialRef.current.uniforms.time.value = clock.getElapsedTime();
       materialRef.current.uniforms.seed.value = Math.sin(clock.getElapsedTime() / 3) * 3;
       
@@ -67,28 +83,13 @@ const Brain: React.FC<BrainProps> = ({ onPositionChange }) => {
       }
     }
   });
-  
-  // Apply shader material to all brain meshes
-  useEffect(() => {
-    if (brainRef.current) {
-      // Create a single instance of the shader material
-      const shaderMaterial = new ScreamShaderMaterial();
-      materialRef.current = shaderMaterial;
-      
-      // Apply to all meshes in the model
-      brainRef.current.traverse((child) => {
-        if (child instanceof THREE.Mesh) {
-          child.material = shaderMaterial;
-        }
-      });
-    }
-  }, []);
 
   return (
     <primitive 
       object={gltf.scene.clone()} 
       ref={brainRef} 
       position={basePosition} 
+      rotation={baseRotation}
       scale={[baseScale, baseScale, baseScale]} 
     />
   );

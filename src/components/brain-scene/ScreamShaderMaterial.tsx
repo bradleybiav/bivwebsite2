@@ -119,9 +119,9 @@ class ScreamShaderMaterial extends THREE.ShaderMaterial {
           float combinedNoise = noise1 * 0.4 + noise2 * 0.4 + noise3 * 0.2;
           
           // Create vivid color variations
-          vec3 color1 = vec3(0.8, 0.2, 0.8); // Vibrant purple
+          vec3 color1 = vec3(0.7, 0.4, 0.9); // Vivid purple
           vec3 color2 = vec3(0.2, 0.8, 0.9); // Bright cyan
-          vec3 color3 = vec3(0.1, 0.9, 0.3); // Bright green
+          vec3 color3 = vec3(0.9, 0.4, 0.7); // Pinkish purple
           
           // Mix colors based on noise
           vec3 finalColor = mix(color1, color2, smoothstep(-0.6, 0.6, noise1));

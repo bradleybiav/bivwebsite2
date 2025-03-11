@@ -11,9 +11,9 @@ interface BrainProps {
 
 const Brain = ({ isMobile = false }: BrainProps) => {
   // Mobile specific adjustments for position and scale
-  const basePosition: [number, number, number] = isMobile ? [0, -1, 0] : [0, 0.97, 0];
+  const basePosition: [number, number, number] = isMobile ? [0, 0, 0] : [0, 0.97, 0];
   const baseRotation: [number, number, number] = [0, 0, 0];
-  const baseScale = isMobile ? 2.5 : 4.5; // Smaller scale but closer to camera for mobile
+  const baseScale = isMobile ? 1.5 : 4.5; // Smaller scale for mobile
 
   const brainRef = useRef<THREE.Group>();
   const materialRef = useRef<any>();
@@ -34,7 +34,7 @@ const Brain = ({ isMobile = false }: BrainProps) => {
     
     if (brainRef.current) {
       // Faster rotation for mobile for more visibility
-      brainRef.current.rotation.y += isMobile ? 0.01 : 0.003;
+      brainRef.current.rotation.y += isMobile ? 0.02 : 0.003;
       
       const time = clock.getElapsedTime();
       brainRef.current.position.y = basePosition[1] + Math.sin(time * 0.5) * 0.2;

@@ -4,8 +4,8 @@
 export function createDotCloud(getRandomColor) {
   const dotCloud = new THREE.Group();
   
-  // Create 300 dots with size 0.1
-  const dotCount = 300;
+  // Create 1500 dots (5x the original 300) with size 0.1
+  const dotCount = 1500;
   
   for (let i = 0; i < dotCount; i++) {
     const dotGeometry = new THREE.SphereGeometry(0.1, 8, 8);

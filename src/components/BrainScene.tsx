@@ -6,13 +6,24 @@ import Brain from './brain-scene/Brain';
 import CoordinatesDisplay from './brain-scene/CoordinatesDisplay';
 import * as THREE from 'three';
 
-// Camera position tracker component that also calculates optimal brain position
+// Camera and brain position tracker
 const CameraTracker = ({ onCameraChange }) => {
-  const { camera } = useThree();
+  const { camera, scene } = useThree();
+  const brainRef = useRef(null);
   
+  // Find brain object in scene
   useFrame(() => {
     // This runs every frame to update camera position
     onCameraChange(camera.position.clone());
+    
+    // Try to find the brain object in the scene if we haven't found it yet
+    if (!brainRef.current) {
+      scene.traverse((object) => {
+        if (object.name === 'Brain' || (object.type === 'Group' && object.children.length > 0)) {
+          brainRef.current = object;
+        }
+      });
+    }
   });
   
   return null;
@@ -23,7 +34,13 @@ const BrainScene = () => {
   const [brainPosition, setBrainPosition] = useState<[number, number, number]>([0, 1, 0]);
   const [brainRotation, setBrainRotation] = useState<[number, number, number]>([0, 0, 0]);
   const [brainScale, setBrainScale] = useState<number>(3.5);
-  const [cameraPosition, setCameraPosition] = useState<THREE.Vector3>(new THREE.Vector3(0, 0, 40));
+  const [cameraPosition, setCameraPosition] = useState<THREE.Vector3>(new THREE.Vector3(0, 0, 10));
+  
+  // This is the position you'll want to use as the starting point
+  // The brain component will pick this up and use it
+  const idealPosition: [number, number, number] = [0, 0.8, 0];
+  const idealRotation: [number, number, number] = [0, 0, 0];
+  const idealScale = 3.44;
 
   const handlePositionChange = (
     position: [number, number, number],
@@ -46,8 +63,8 @@ const BrainScene = () => {
         <directionalLight position={[1, 1, 1]} intensity={1.0} />
         <pointLight position={[0, 10, 0]} intensity={1.0} color="#D946EF" />
         
-        {/* Positioned camera further back for a more zoomed-out view */}
-        <PerspectiveCamera makeDefault position={[0, 0, 40]} />
+        {/* Camera with ideal starting position - adjust this based on what looks good */}
+        <PerspectiveCamera makeDefault position={[0, 0, 10]} />
         <OrbitControls 
           enableDamping 
           dampingFactor={0.05} 

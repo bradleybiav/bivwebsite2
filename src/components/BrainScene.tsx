@@ -1,28 +1,19 @@
 
 import React, { useState, useRef } from 'react';
-import { Canvas, useThree } from '@react-three/fiber';
+import { Canvas, useThree, useFrame } from '@react-three/fiber';
 import { OrbitControls, PerspectiveCamera } from '@react-three/drei';
 import Brain from './brain-scene/Brain';
 import CoordinatesDisplay from './brain-scene/CoordinatesDisplay';
 import * as THREE from 'three';
 
-// Camera position tracker component
+// Camera position tracker component that also calculates optimal brain position
 const CameraTracker = ({ onCameraChange }) => {
   const { camera } = useThree();
   
-  React.useEffect(() => {
-    // Update on camera change
-    const updateCamera = () => {
-      onCameraChange(camera.position);
-    };
-    
-    // Listen for camera updates
-    camera.addEventListener('change', updateCamera);
-    
-    return () => {
-      camera.removeEventListener('change', updateCamera);
-    };
-  }, [camera, onCameraChange]);
+  useFrame(() => {
+    // This runs every frame to update camera position
+    onCameraChange(camera.position.clone());
+  });
   
   return null;
 };
@@ -62,10 +53,6 @@ const BrainScene = () => {
           dampingFactor={0.05} 
           enableZoom={true}
           autoRotate={false}
-          onChange={() => {
-            // This triggers when orbit controls change
-            // The CameraTracker handles the actual update
-          }}
         />
         
         <CameraTracker onCameraChange={handleCameraChange} />

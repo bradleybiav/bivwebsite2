@@ -52,21 +52,17 @@ function loadBrainModel() {
   // Set up loader
   const loader = new THREE.GLTFLoader();
   
-  // Hide the brain initially (don't show placeholder)
-  brain = new THREE.Group(); // Empty group to hold the brain
-  scene.add(brain);
-  
-  // Load the brain model
+  // Load the brain model directly without showing a placeholder sphere
   loader.load('brainBBBBB.glb', function(gltf) {
     console.log("GLB model loaded successfully!");
     
     // Get the brain mesh from the loaded model
-    const brainModel = gltf.scene;
-    brainModel.scale.set(0.5, 0.5, 0.5);
-    brainModel.position.set(0, 0, 0);
+    brain = gltf.scene;
+    brain.scale.set(0.5, 0.5, 0.5);
+    brain.position.set(0, 0, 0);
     
     // Set the material of the brain
-    brainModel.traverse((child) => {
+    brain.traverse((child) => {
       if (child.isMesh) {
         child.material = new THREE.MeshStandardMaterial({ 
           color: 0xff69b4, // Pink color for the brain
@@ -79,29 +75,11 @@ function loadBrainModel() {
       }
     });
     
-    // Add the loaded model to our brain group
-    brain.add(brainModel);
+    // Add the brain to the scene
+    scene.add(brain);
     
-    // Initialize quaternion for rotation
-    brain.quaternion.set(0, 0, 0, 1);
   }, undefined, function(error) {
     console.error('An error happened while loading the GLB model:', error);
-    
-    // Create a fallback brain using a sphere if the model fails to load
-    const brainGeometry = new THREE.SphereGeometry(5, 32, 32);
-    const brainMaterial = new THREE.MeshStandardMaterial({ 
-      color: 0xff69b4,
-      emissive: 0x220000,
-      roughness: 0.3,
-      metalness: 0.2
-    });
-    const sphereBrain = new THREE.Mesh(brainGeometry, brainMaterial);
-    sphereBrain.scale.set(0.5, 0.5, 0.5);
-    sphereBrain.position.set(0, 0, 0);
-    sphereBrain.castShadow = true;
-    sphereBrain.receiveShadow = true;
-    
-    brain.add(sphereBrain);
   });
 }
 
@@ -109,12 +87,11 @@ function loadBrainModel() {
 function createDotCloud() {
   dotCloud = new THREE.Group();
   
-  // Create more dots (500 instead of 300) with smaller size
-  const dotCount = 500;
+  // Create dots with original settings
+  const dotCount = 300;
   
   for (let i = 0; i < dotCount; i++) {
-    // Smaller dots (0.05 instead of 0.1)
-    const dotGeometry = new THREE.SphereGeometry(0.05, 8, 8);
+    const dotGeometry = new THREE.SphereGeometry(0.1, 8, 8);
     
     // Use consistent color palette from original site
     const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#00ffff'];
@@ -123,8 +100,8 @@ function createDotCloud() {
     const dotMaterial = new THREE.MeshBasicMaterial({ color: color });
     const dot = new THREE.Mesh(dotGeometry, dotMaterial);
     
-    // Position dots in a larger spherical pattern (radius 20 instead of 15)
-    const radius = 20;
+    // Position dots in original spherical pattern
+    const radius = 15;
     const theta = Math.random() * Math.PI * 2;
     const phi = Math.random() * Math.PI;
     
@@ -158,7 +135,7 @@ function triggerColorChange() {
     link.style.color = colors[textColorIndex];
     renderer.setClearColor(colors[bgColorIndex]);
     
-    // Update dot colors to match the original site behavior
+    // Update dot colors
     dotCloud.children.forEach((dot) => {
       // Keep original dot colors when in random color mode
     });
@@ -179,7 +156,7 @@ function triggerColorChange() {
   toggle = !toggle;
 }
 
-// Set up user interaction similar to original site
+// Set up user interaction
 function setupInteraction() {
   // Interaction zone to detect mouse/finger movement
   function isWithinZone(x, y) {
@@ -226,10 +203,7 @@ function animate() {
   requestAnimationFrame(animate);
   
   if (brain) {
-    const axis = new THREE.Vector3(0, 1, 0);
-    const angle = 0.002;
-    const quaternion = new THREE.Quaternion().setFromAxisAngle(axis, angle);
-    brain.quaternion.multiplyQuaternions(quaternion, brain.quaternion);
+    brain.rotation.y += 0.002;
   }
   
   if (dotCloud) {

@@ -1,7 +1,7 @@
 
 import React, { useRef, useEffect, useState } from 'react';
 import { useFrame, useLoader } from '@react-three/fiber';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import * as THREE from 'three';
 import ScreamShaderMaterial from './ScreamShaderMaterial';
 
@@ -12,7 +12,7 @@ interface BrainProps {
 const Brain: React.FC<BrainProps> = ({ onPositionChange }) => {
   const brainRef = useRef<THREE.Group>();
   const materialRef = useRef<ScreamShaderMaterial>();
-  const gltf = useLoader(GLTFLoader, '/brainBBBBB.glb');
+  const gltf = useLoader(GLTFLoader, './brainBBBBB.glb');
   
   // Updated values based on user's preferred position
   const basePosition: [number, number, number] = [0, 0.97, 0];
@@ -29,6 +29,16 @@ const Brain: React.FC<BrainProps> = ({ onPositionChange }) => {
         if (child instanceof THREE.Mesh) {
           // Apply the shader material to each mesh
           child.material = shaderMaterial;
+          
+          // Important: Enable transparency for the material
+          child.material.transparent = true;
+          child.material.side = THREE.DoubleSide;
+          
+          // Store original geometry normals if needed
+          if (!child.userData.originalNormals) {
+            const normals = child.geometry.attributes.normal.array;
+            child.userData.originalNormals = [...normals];
+          }
         }
       });
     }
@@ -83,6 +93,9 @@ const Brain: React.FC<BrainProps> = ({ onPositionChange }) => {
       }
     }
   });
+
+  // Add console logging to help debug
+  console.log("Brain model loaded:", gltf);
 
   return (
     <primitive 

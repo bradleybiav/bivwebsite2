@@ -104,8 +104,8 @@ class ScreamShaderMaterial extends THREE.ShaderMaterial {
         }
         
         void main() {
-          // Base color to avoid pure black
-          vec3 baseColor = vec3(0.5, 0.5, 0.5);
+          // Base color - starting with something visible
+          vec3 baseColor = vec3(0.8, 0.5, 0.9);
           
           // Create layered noise effect with higher frequency and more vivid coloring
           float smallScale = 3.0; // Frequency for detailed patterns
@@ -119,9 +119,9 @@ class ScreamShaderMaterial extends THREE.ShaderMaterial {
           float combinedNoise = noise1 * 0.4 + noise2 * 0.4 + noise3 * 0.2;
           
           // Create vivid color variations
-          vec3 color1 = vec3(0.7, 0.4, 0.9); // Vivid purple
-          vec3 color2 = vec3(0.2, 0.8, 0.9); // Bright cyan
-          vec3 color3 = vec3(0.9, 0.4, 0.7); // Pinkish purple
+          vec3 color1 = vec3(0.9, 0.3, 0.8); // Vibrant pink/purple
+          vec3 color2 = vec3(0.3, 0.8, 0.9); // Bright cyan
+          vec3 color3 = vec3(0.8, 0.6, 0.2); // Golden yellow
           
           // Mix colors based on noise
           vec3 finalColor = mix(color1, color2, smoothstep(-0.6, 0.6, noise1));
@@ -140,12 +140,13 @@ class ScreamShaderMaterial extends THREE.ShaderMaterial {
           finalColor *= light;
           
           // Ensure we don't have pure black by adding a minimum color value
-          finalColor = max(finalColor, vec3(0.05, 0.05, 0.05));
+          finalColor = max(finalColor, vec3(0.1, 0.1, 0.1));
           
           gl_FragColor = vec4(finalColor, 1.0);
         }
       `,
-      transparent: false
+      transparent: true,
+      side: THREE.DoubleSide
     });
   }
 }

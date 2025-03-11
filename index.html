@@ -17,10 +17,14 @@
     <link rel="stylesheet" href="styles_brain_v20.css">
     <link rel="icon" href="favicon_vat_transparent_final_2.ico" type="image/x-icon">
     <style>
-        /* Position canvas with higher z-index than text */
+        /* Position canvas relative to the page */
         canvas {
-            position: relative;
-            z-index: 2; /* Higher than the text */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 5; /* Lower than text z-index */
             pointer-events: auto; /* Ensure interaction works */
         }
     </style>

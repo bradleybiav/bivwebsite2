@@ -61,14 +61,14 @@ function loadBrainModel() {
     brain.scale.set(0.5, 0.5, 0.5);
     brain.position.set(0, 0, 0);
     
-    // Set the material of the brain
+    // Set the material of the brain - less shiny
     brain.traverse((child) => {
       if (child.isMesh) {
         child.material = new THREE.MeshStandardMaterial({ 
           color: 0xff69b4, // Pink color for the brain
           emissive: 0x220000, // Slight glow
-          roughness: 0.3,
-          metalness: 0.2
+          roughness: 0.7,     // Increased roughness to make less shiny
+          metalness: 0.1      // Reduced metalness to make less shiny
         });
         child.castShadow = true;
         child.receiveShadow = true;
@@ -83,24 +83,24 @@ function loadBrainModel() {
   });
 }
 
-// Create dot cloud with the original specifications
+// Create dot cloud with original specifications
 function createDotCloud() {
   dotCloud = new THREE.Group();
   
-  // Create dots with original settings
+  // Create 300 dots with size 0.1
   const dotCount = 300;
   
   for (let i = 0; i < dotCount; i++) {
     const dotGeometry = new THREE.SphereGeometry(0.1, 8, 8);
     
-    // Use consistent color palette from original site
+    // Use original color palette
     const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#00ffff'];
     const color = colors[Math.floor(Math.random() * colors.length)];
     
     const dotMaterial = new THREE.MeshBasicMaterial({ color: color });
     const dot = new THREE.Mesh(dotGeometry, dotMaterial);
     
-    // Position dots in original spherical pattern
+    // Position dots in sphere with radius 15
     const radius = 15;
     const theta = Math.random() * Math.PI * 2;
     const phi = Math.random() * Math.PI;
@@ -137,7 +137,9 @@ function triggerColorChange() {
     
     // Update dot colors
     dotCloud.children.forEach((dot) => {
-      // Keep original dot colors when in random color mode
+      const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#00ffff'];
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      dot.material.color.set(color);
     });
   } else {
     // Switch back to black/white

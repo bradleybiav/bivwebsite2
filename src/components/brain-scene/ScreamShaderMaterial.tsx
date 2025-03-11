@@ -104,43 +104,48 @@ class ScreamShaderMaterial extends THREE.ShaderMaterial {
         }
         
         void main() {
+          // Base color to avoid pure black
+          vec3 baseColor = vec3(0.5, 0.5, 0.5);
+          
           // Create layered noise effect with higher frequency and more vivid coloring
-          float smallScale = 6.0; // Increase frequency for more detailed patterns
+          float smallScale = 3.0; // Frequency for detailed patterns
           
           vec3 pos = vPosition * scale;
           float noise1 = snoise(pos * smallScale + vec3(time * 0.1, time * 0.12, seed));
           float noise2 = snoise(pos * smallScale * 2.0 + vec3(time * 0.15, time * 0.1, seed * 1.5));
           float noise3 = snoise(pos * smallScale * 4.0 + vec3(time * 0.12, time * 0.15, seed * 2.0));
           
-          // Mix noise layers with more weight on higher frequency details
+          // Mix noise layers
           float combinedNoise = noise1 * 0.4 + noise2 * 0.4 + noise3 * 0.2;
           
-          // Create more vibrant color variations
-          vec3 baseColor = color;
+          // Create vivid color variations
           vec3 color1 = vec3(0.8, 0.2, 0.8); // Vibrant purple
           vec3 color2 = vec3(0.2, 0.8, 0.9); // Bright cyan
           vec3 color3 = vec3(0.1, 0.9, 0.3); // Bright green
           
-          // Mix colors with more contrast 
+          // Mix colors based on noise
           vec3 finalColor = mix(color1, color2, smoothstep(-0.6, 0.6, noise1));
           finalColor = mix(finalColor, color3, smoothstep(-0.4, 0.4, noise2));
-          finalColor = mix(finalColor, baseColor, smoothstep(-0.3, 0.3, noise3));
+          finalColor = mix(finalColor, color, smoothstep(-0.3, 0.3, noise3));
           
-          // Enhance color variation based on position to ensure entire brain is affected
+          // Add position-based color variation
           finalColor *= 0.8 + 0.4 * vec3(
-            0.5 + 0.5 * sin(time + vPosition.x * 3.0),
-            0.5 + 0.5 * sin(time * 1.1 + vPosition.y * 3.0),
-            0.5 + 0.5 * sin(time * 0.9 + vPosition.z * 3.0)
+            0.5 + 0.5 * sin(time + vPosition.x * 2.0),
+            0.5 + 0.5 * sin(time * 1.1 + vPosition.y * 2.0),
+            0.5 + 0.5 * sin(time * 0.9 + vPosition.z * 2.0)
           );
           
-          // Apply lighting effect based on normal
-          float light = dot(vNormal, normalize(vec3(1.0, 1.0, 1.0))) * 0.5 + 0.5;
+          // Apply simple lighting effect based on normal
+          float light = dot(vNormal, normalize(vec3(1.0, 1.0, 1.0))) * 0.7 + 0.5;
           finalColor *= light;
+          
+          // Ensure we don't have pure black by adding a minimum color value
+          finalColor = max(finalColor, vec3(0.05, 0.05, 0.05));
           
           gl_FragColor = vec4(finalColor, 1.0);
         }
       `,
-      transparent: true
+      transparent: false
     });
   }
 }

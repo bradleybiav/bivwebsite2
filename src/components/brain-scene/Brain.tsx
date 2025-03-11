@@ -40,21 +40,22 @@ const Brain = () => {
     }
   });
   
-  // Clone the model to apply our custom material to ALL brain meshes
+  // Apply shader material to all brain meshes
   useEffect(() => {
     if (brainRef.current) {
+      // Create a single instance of the shader material
       const shaderMaterial = new ScreamShaderMaterial();
       materialRef.current = shaderMaterial;
       
-      // Apply the shader material to ALL meshes in the brain model
+      // Apply to all meshes in the model
       brainRef.current.traverse((child) => {
         if (child instanceof THREE.Mesh) {
           child.material = shaderMaterial;
         }
       });
     }
-  }, [gltf]);
-  
+  }, []);
+
   return (
     <primitive 
       object={gltf.scene.clone()} 

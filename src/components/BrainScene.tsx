@@ -9,9 +9,9 @@ const BrainScene = () => {
   return (
     <div style={{ width: '100%', height: '100vh', overflow: 'hidden' }}>
       <Canvas>
-        <ambientLight intensity={0.5} />
-        <directionalLight position={[1, 1, 1]} intensity={0.5} />
-        <pointLight position={[0, 10, 0]} intensity={0.5} color="#D946EF" />
+        <ambientLight intensity={1.0} />
+        <directionalLight position={[1, 1, 1]} intensity={1.0} />
+        <pointLight position={[0, 10, 0]} intensity={1.0} color="#D946EF" />
         
         <PerspectiveCamera makeDefault position={[0, 5, 50]} />
         <OrbitControls 

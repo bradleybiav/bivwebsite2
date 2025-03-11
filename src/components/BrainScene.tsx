@@ -29,7 +29,7 @@ const BrainScene = () => {
       overflow: 'hidden',
       backgroundColor: '#000000' // Ensure black background on all devices
     }}>
-      <Canvas>
+      <Canvas shadows>
         <ambientLight intensity={1.0} />
         <directionalLight position={[1, 1, 1]} intensity={1.0} />
         <pointLight position={[0, 10, 0]} intensity={1.0} color="#D946EF" />
@@ -37,15 +37,15 @@ const BrainScene = () => {
         {/* Adjust camera for better mobile viewing - fixed position to ensure brain is visible */}
         <PerspectiveCamera 
           makeDefault 
-          position={isMobile ? [0, 0, 120] : [280.47, -4.24, -2.98]} 
+          position={isMobile ? [0, 0, 15] : [280.47, -4.24, -2.98]} 
           fov={isMobile ? 75 : 75}
         />
         <OrbitControls 
           enableDamping 
           dampingFactor={0.05} 
           enableZoom={true}
-          autoRotate={isMobile ? true : false}
-          autoRotateSpeed={isMobile ? 0.5 : 0}
+          autoRotate={true}
+          autoRotateSpeed={isMobile ? 1.0 : 0.5}
         />
         
         <fog attach="fog" args={['#000000', 25, 40]} />

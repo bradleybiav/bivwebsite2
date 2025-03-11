@@ -5,8 +5,6 @@
 import { setupScene } from './js/scene.js';
 import { createDotCloud } from './js/dotCloud.js';
 import { loadBrainModel } from './js/brain.js';
-import { setupInteraction } from './js/interaction.js';
-import { setupColors } from './js/colors.js';
 import { animate } from './js/animation.js';
 
 // Global variables
@@ -18,27 +16,24 @@ let screamOptions = null;
 // Initialize and start animation
 function init() {
   console.log("Script loaded and executed.");
+  
+  // Setup scene, camera, renderer, and controls
   const sceneSetup = setupScene();
   scene = sceneSetup.scene;
   camera = sceneSetup.camera;
   renderer = sceneSetup.renderer;
   controls = sceneSetup.controls;
   
-  // Load the brain model
-  loadBrainModel(scene, function(brainModel, options) {
-    brain = brainModel;
-    screamOptions = options;
-  });
-  
   // Create and add dot cloud
   dotCloud = createDotCloud();
   scene.add(dotCloud);
   
-  // Setup fixed colors (black background with colored dots)
-  setupColors(renderer, dotCloud, screamOptions);
-  
-  // Setup interaction
-  setupInteraction(renderer, dotCloud, screamOptions);
+  // Load the brain model
+  loadBrainModel(scene, function(brainModel, options) {
+    brain = brainModel;
+    screamOptions = options;
+    console.log("Brain model loaded with scream options:", !!screamOptions);
+  });
   
   // Start animation loop
   animate(brain, dotCloud, screamOptions, controls, renderer, scene, camera);

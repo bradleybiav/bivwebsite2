@@ -18,9 +18,9 @@ export function loadBrainModel(scene, callback) {
       screamOptions = {
         scale: 1,
         variety: 1,
-        color: { value: new THREE.Color(0.6, 0.2, 0.8) }, // Purple-ish
-        background: new THREE.Color(0.2, 0.1, 0.3), // Dark purple
-        seed: { value: 0 }
+        color: { value: new THREE.Color(0.6, 0.8, 0.3) }, // greenish-purple initial color
+        background: new THREE.Color(0.2, 0.1, 0.3), // Dark purple background
+        seed: { value: 0 } // Dynamic seed value for animation
       };
       
       console.log("Scream options created:", screamOptions);
@@ -45,7 +45,7 @@ export function loadBrainModel(scene, callback) {
       if (child.isMesh) {
         try {
           if (typeof tsl !== 'undefined' && tsl.scream) {
-            // Create standard material with Scream texture
+            // Create a material with the Scream texture
             console.log("Applying TSL Scream texture to brain");
             
             // Create a standard material
@@ -98,8 +98,18 @@ export function loadBrainModel(scene, callback) {
 
 // Update scream animation
 export function updateScreamAnimation(screamOptions) {
-  if (screamOptions && screamOptions.seed) {
+  if (screamOptions && screamOptions.seed && screamOptions.color) {
     // Animate the seed parameter for movement
-    screamOptions.seed.value = (performance.now() / 3000) % 100;
+    const time = performance.now();
+    
+    // Update seed with a sine wave pattern for flowing animation
+    screamOptions.seed.value = 3 * Math.sin(time / 3700);
+    
+    // Slowly shift colors over time
+    screamOptions.color.value.set(
+      0.5 + 0.5 * Math.sin(time / 7000),
+      0.5 + 0.5 * Math.sin(time / 8000),
+      0.5 + 0.5 * Math.sin(time / 5000)
+    );
   }
 }

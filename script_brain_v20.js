@@ -3,7 +3,7 @@
 
 // Wait for DOM content to load
 document.addEventListener('DOMContentLoaded', () => {
-  console.log("Main script loaded. Setup will begin when DOM is ready.");
+  console.log("Brain script loaded. Setting up scene...");
   
   // Create scene
   const scene = new THREE.Scene();
@@ -13,9 +13,11 @@ document.addEventListener('DOMContentLoaded', () => {
   camera.position.set(0, 0, 50); // Positioned to see the brain
   
   // Setup renderer with antialias for better quality
-  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
   renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setClearColor(0x000000, 0); // Set clear color to transparent
   document.body.appendChild(renderer.domElement);
+  console.log("Renderer created and appended to body");
   
   // Add lighting to make objects visible
   const ambientLight = new THREE.AmbientLight(0xffffff, 0.5); // Ambient light
@@ -43,6 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // Create animated grass-like background using noise
   const createAnimatedGrassBackground = () => {
+    console.log("Creating animated grass background");
     // Shader materials for the animated grass noise
     const vertexShader = `
       varying vec2 vUv;
@@ -137,17 +140,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const planeMaterial = new THREE.ShaderMaterial({
       vertexShader: vertexShader,
       fragmentShader: fragmentShader,
-      uniforms: uniforms,
-      side: THREE.BackSide  // Render on back side so it appears as background
+      uniforms: uniforms
     });
     
-    // Create background mesh
+    // Create background mesh - don't use BackSide as it may be causing issues
     const backgroundMesh = new THREE.Mesh(planeGeometry, planeMaterial);
-    backgroundMesh.position.z = -50;  // Behind everything
+    backgroundMesh.position.z = -100;  // Far behind everything
     backgroundMesh.renderOrder = -1;  // Ensure it's rendered first
     
     // Add to scene
     scene.add(backgroundMesh);
+    console.log("Background mesh added to scene");
     
     return { mesh: backgroundMesh, uniforms: uniforms };
   };
@@ -171,6 +174,14 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Start animation
     animate();
+  }, 
+  // Progress callback
+  (xhr) => {
+    console.log(`Model loading: ${(xhr.loaded / xhr.total * 100).toFixed(2)}%`);
+  },
+  // Error callback
+  (error) => {
+    console.error('Error loading model:', error);
   });
   
   // Animation loop

@@ -18,8 +18,8 @@ export function loadBrainModel(scene, callback) {
       // Model loaded successfully
       const brain = gltf.scene;
       
-      // Scale the brain to a reasonable size
-      brain.scale.set(2.2, 2.2, 2.2);
+      // Scale the brain to a much smaller size
+      brain.scale.set(0.8, 0.8, 0.8);
       
       // Position the brain in the center but slightly offset
       brain.position.set(0, -1, 0);
@@ -73,7 +73,7 @@ export function loadBrainModel(scene, callback) {
 // Create a colorful brain sphere (fallback if model loading fails)
 function createBrainSphere(scene, callback) {
   console.log("Creating fallback brain sphere");
-  const geometry = new THREE.SphereGeometry(1, 32, 32);
+  const geometry = new THREE.SphereGeometry(0.5, 32, 32); // Smaller fallback sphere
   const material = new THREE.MeshPhongMaterial({
     color: 0xff00ff,
     emissive: 0x440044,

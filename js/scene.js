@@ -8,7 +8,7 @@ export function setupScene() {
   
   // Setup camera
   const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-  camera.position.set(0, 0, 12); // Positioned further back to see more of the scene
+  camera.position.set(0, 0, 30); // Positioned much further back to see more of the scene
   
   // Setup renderer with antialias for better quality
   const renderer = new THREE.WebGLRenderer({ antialias: true });

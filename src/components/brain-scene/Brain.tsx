@@ -1,4 +1,3 @@
-
 import React, { useRef, useEffect } from 'react';
 import { useFrame, useLoader } from '@react-three/fiber';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -10,10 +9,14 @@ interface BrainProps {
 }
 
 const Brain = ({ isMobile = false }: BrainProps) => {
-  // Adjust the scale to a more moderate size, further reduced on mobile
+  // Mobile-specific positioning and scale
   const basePosition: [number, number, number] = isMobile ? [0, 0, 0] : [0, 0.97, 0];
-  const baseRotation: [number, number, number] = [0, 0, 0];
-  const baseScale = isMobile ? 1.5 : 4.5; // Adjusted scale for better mobile visibility
+  
+  // Adjust rotation specifically for mobile to correct orientation
+  const baseRotation: [number, number, number] = isMobile ? [0, Math.PI, 0] : [0, 0, 0];
+  
+  // Keep desktop scale as is, adjust mobile scale for better view
+  const baseScale = isMobile ? 1.5 : 4.5;
 
   const brainRef = useRef<THREE.Group>();
   const materialRef = useRef<any>();

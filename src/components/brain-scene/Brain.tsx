@@ -1,3 +1,4 @@
+
 import React, { useRef, useEffect } from 'react';
 import { useFrame, useLoader } from '@react-three/fiber';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -16,7 +17,13 @@ const Brain = ({ isMobile = false }: BrainProps) => {
 
   const brainRef = useRef<THREE.Group>();
   const materialRef = useRef<any>();
-  const gltf = useLoader(GLTFLoader, '/brainBBBBB.glb');
+  
+  // Use a relative path that works on both local dev and production
+  const modelPath = window.location.hostname === 'localhost' 
+    ? '/brainBBBBB.glb' 
+    : './brainBBBBB.glb';
+  
+  const gltf = useLoader(GLTFLoader, modelPath);
   
   useFrame(({ clock }) => {
     if (materialRef.current) {

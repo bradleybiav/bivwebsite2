@@ -2,6 +2,8 @@
 // Scene setup module
 
 export function setupScene() {
+  // Use the global THREE object instead of importing it
+  
   // Create scene
   const scene = new THREE.Scene();
   

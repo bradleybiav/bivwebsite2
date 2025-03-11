@@ -16,20 +16,6 @@
     <title>Brain in a Vat</title>
     <link rel="stylesheet" href="styles_brain_v20.css">
     <link rel="icon" href="favicon_vat_transparent_final_2.ico" type="image/x-icon">
-    
-    <!-- Add ES Module Shims and Import Map for TSL textures -->
-    <script async src="https://ga.jspm.io/npm:es-module-shims@1.5.1/dist/es-module-shims.js" crossorigin="anonymous"></script>
-    <script type="importmap">
-      {
-        "imports": {
-          "three": "https://cdn.jsdelivr.net/npm/three@0.171.0/build/three.min.js",
-          "three/webgpu": "https://cdn.jsdelivr.net/npm/three@0.171.0/build/three.webgpu.min.js",
-          "three/tsl": "https://cdn.jsdelivr.net/npm/three@0.171.0/build/three.tsl.min.js",
-          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.171.0/examples/jsm/",
-          "tsl-textures/": "https://cdn.jsdelivr.net/npm/tsl-textures@1.5.0/src/"
-        }
-      }
-    </script>
 </head>
 <body>
     <!-- Three.js will create canvas elements -->
@@ -58,7 +44,7 @@
     <!-- Include Lovable script -->
     <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
     
-    <!-- Main script - now using ES modules -->
+    <!-- Main script - using type="module" -->
     <script src="script_brain_v20.js" type="module"></script>
 </body>
 </html>

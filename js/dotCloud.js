@@ -2,6 +2,7 @@
 // Dot cloud module
 
 export function createDotCloud() {
+  // Use the global THREE object instead of importing it
   const dotCloud = new THREE.Group();
   
   // Create 1500 dots with size 0.1

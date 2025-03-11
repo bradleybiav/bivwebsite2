@@ -2,6 +2,8 @@
 // Brain model module
 
 export function loadBrainModel(scene, callback) {
+  // Use the global THREE object instead of importing it
+  
   // Set up loader
   const loader = new THREE.GLTFLoader();
   let screamOptions = null;

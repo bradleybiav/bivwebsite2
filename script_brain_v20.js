@@ -1,5 +1,7 @@
 
 // Main script for Brain in a Vat visualization
+
+// Import modules without directly importing THREE
 import { setupScene } from './js/scene.js';
 import { createDotCloud } from './js/dotCloud.js';
 import { loadBrainModel } from './js/brain.js';

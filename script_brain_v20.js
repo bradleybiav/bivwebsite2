@@ -74,6 +74,7 @@ function setupScene() {
   // Create camera
   camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
   camera.position.z = 30;
+  camera.position.y = 0; // Ensure camera is centered on the y-axis
   
   // Create renderer
   renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -99,6 +100,7 @@ function setupScene() {
   controls = new THREE.OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
   controls.dampingFactor = 0.05;
+  controls.target.set(0, 0, 0); // Ensure controls are centered at origin
   
   return { scene, camera, renderer, controls };
 }
@@ -172,7 +174,7 @@ function loadBrainModel() {
     // Get the brain mesh from the loaded model
     brain = gltf.scene;
     brain.scale.set(0.5, 0.5, 0.5);
-    brain.position.set(0, 0, 0);
+    brain.position.set(0, 0, 0); // Ensure brain is centered at origin
     
     // Apply material to brain
     brain.traverse((child) => {
@@ -227,15 +229,13 @@ function loadBrainModel() {
 
 // Setup interaction for mouse movement and device orientation
 function setupInteraction() {
-  // Interaction based on mouse movement - MODIFIED for small dot cloud movement
+  // Interaction based on mouse movement - MODIFIED for small dot cloud movement only
   document.addEventListener('mousemove', function(event) {
     const moveX = (event.clientX - window.innerWidth / 2) * 0.02;
     const moveY = (event.clientY - window.innerHeight / 2) * 0.02;
     
-    if (brain) {
-      brain.rotation.y = moveX * 0.05;
-      brain.rotation.x = moveY * 0.05;
-    }
+    // Keep brain unaffected by mouse movement
+    // Note: Brain rotation will be handled in the animate function
     
     if (dotCloud) {
       // Reduce movement factor significantly for subtle effect
@@ -244,21 +244,19 @@ function setupInteraction() {
     }
   });
   
-  // Interaction based on device orientation (for mobile devices) - MODIFIED for small dot cloud movement
+  // Interaction based on device orientation (for mobile devices) - MODIFIED for small dot cloud movement only
   window.addEventListener('deviceorientation', function(event) {
     if (event.beta && event.gamma) {
       const moveX = event.gamma * 0.05; // Left/right tilt
       const moveY = event.beta * 0.05; // Front/back tilt
       
-      if (brain) {
-        brain.rotation.y = moveX * 0.05;
-        brain.rotation.x = moveY * 0.05;
-      }
+      // Keep brain unaffected by device orientation
+      // Note: Brain rotation will be handled in the animate function
       
       if (dotCloud) {
         // Reduce movement factor significantly for subtle effect
-        dotCloud.rotation.y = -moveX * 0.005; // Reduced from 0.02 to 0.005
-        dotCloud.rotation.x = -moveY * 0.005; // Reduced from 0.02 to 0.005
+        dotCloud.rotation.y = -moveX * 0.005;
+        dotCloud.rotation.x = -moveY * 0.005;
       }
     }
   });
@@ -287,18 +285,21 @@ function updateScreamAnimation() {
   }
 }
 
-// Animation loop - MODIFIED to keep dots more stable
+// Animation loop - MODIFIED for globe-like brain rotation
 function animate() {
   requestAnimationFrame(animate);
   
   if (brain) {
-    brain.rotation.y += 0.002; // Brain continues to rotate
+    // Create continuous rotation around the Y axis (like a globe)
+    brain.rotation.y += 0.005; // Speed up the rotation for more visible globe-like effect
+    
+    // No rotation on X or Z axes to maintain a globe-like spin
+    
     updateScreamAnimation();
   }
   
   if (dotCloud) {
-    // Remove autonomous rotation of dot cloud to keep it more suspended in space
-    // Commented out: dotCloud.rotation.y -= 0.002;
+    // No autonomous rotation of dot cloud to keep it suspended in space
   }
   
   controls.update();
@@ -331,3 +332,4 @@ function init() {
 
 // Start the application when the page is loaded
 window.addEventListener('DOMContentLoaded', init);
+

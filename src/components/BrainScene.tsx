@@ -1,18 +1,12 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, PerspectiveCamera } from '@react-three/drei';
 import Brain from './brain-scene/Brain';
-import { RotateCw, Pause } from 'lucide-react';
+import Ground from './brain-scene/Ground';
 
 // Main scene component
 const BrainScene = () => {
-  const [autoRotate, setAutoRotate] = useState(false);
-
-  const toggleAutoRotate = () => {
-    setAutoRotate(prev => !prev);
-  };
-
   return (
     <div style={{ width: '100%', height: '100vh', overflow: 'hidden' }}>
       <Canvas>
@@ -25,21 +19,12 @@ const BrainScene = () => {
           enableDamping 
           dampingFactor={0.05} 
           enableZoom={true}
-          autoRotate={autoRotate}
-          autoRotateSpeed={1}
+          autoRotate={false}
         />
         
         <fog attach="fog" args={['#000000', 25, 40]} />
-        <Brain autoRotate={autoRotate} />
+        <Brain />
       </Canvas>
-
-      <button 
-        onClick={toggleAutoRotate}
-        className="absolute bottom-4 right-4 bg-gray-800 bg-opacity-60 text-white p-2 rounded-full flex items-center justify-center z-10 hover:bg-gray-700 transition-colors"
-        aria-label={autoRotate ? "Pause rotation" : "Auto-rotate"}
-      >
-        {autoRotate ? <Pause size={24} /> : <RotateCw size={24} />}
-      </button>
     </div>
   );
 };

@@ -1,4 +1,3 @@
-
 // Main script for Brain in a Vat visualization
 
 // Global variables
@@ -228,7 +227,7 @@ function loadBrainModel() {
 
 // Setup interaction for mouse movement and device orientation
 function setupInteraction() {
-  // Interaction based on mouse movement
+  // Interaction based on mouse movement - MODIFIED for small dot cloud movement
   document.addEventListener('mousemove', function(event) {
     const moveX = (event.clientX - window.innerWidth / 2) * 0.02;
     const moveY = (event.clientY - window.innerHeight / 2) * 0.02;
@@ -239,12 +238,13 @@ function setupInteraction() {
     }
     
     if (dotCloud) {
-      dotCloud.rotation.y = -moveX * 0.02;
-      dotCloud.rotation.x = -moveY * 0.02;
+      // Reduce movement factor significantly for subtle effect
+      dotCloud.rotation.y = -moveX * 0.005; // Reduced from 0.02 to 0.005
+      dotCloud.rotation.x = -moveY * 0.005; // Reduced from 0.02 to 0.005
     }
   });
   
-  // Interaction based on device orientation (for mobile devices)
+  // Interaction based on device orientation (for mobile devices) - MODIFIED for small dot cloud movement
   window.addEventListener('deviceorientation', function(event) {
     if (event.beta && event.gamma) {
       const moveX = event.gamma * 0.05; // Left/right tilt
@@ -256,8 +256,9 @@ function setupInteraction() {
       }
       
       if (dotCloud) {
-        dotCloud.rotation.y = -moveX * 0.02;
-        dotCloud.rotation.x = -moveY * 0.02;
+        // Reduce movement factor significantly for subtle effect
+        dotCloud.rotation.y = -moveX * 0.005; // Reduced from 0.02 to 0.005
+        dotCloud.rotation.x = -moveY * 0.005; // Reduced from 0.02 to 0.005
       }
     }
   });
@@ -286,17 +287,18 @@ function updateScreamAnimation() {
   }
 }
 
-// Animation loop
+// Animation loop - MODIFIED to keep dots more stable
 function animate() {
   requestAnimationFrame(animate);
   
   if (brain) {
-    brain.rotation.y += 0.002;
+    brain.rotation.y += 0.002; // Brain continues to rotate
     updateScreamAnimation();
   }
   
   if (dotCloud) {
-    dotCloud.rotation.y -= 0.002; // Rotate the dot cloud in the opposite direction
+    // Remove autonomous rotation of dot cloud to keep it more suspended in space
+    // Commented out: dotCloud.rotation.y -= 0.002;
   }
   
   controls.update();

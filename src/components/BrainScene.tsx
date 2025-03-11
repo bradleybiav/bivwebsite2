@@ -28,7 +28,6 @@ const BrainScene = () => {
         />
         
         <fog attach="fog" args={['#000000', 25, 40]} />
-        <Ground />
         <Brain />
       </Canvas>
     </div>

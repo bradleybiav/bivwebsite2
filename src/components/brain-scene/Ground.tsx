@@ -20,7 +20,7 @@ const Ground = () => {
       ctx.fillStyle = '#0a3200';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       
-      // Draw random green pixels for grass texture (similar to "Brain and motion")
+      // Draw random green pixels for grass texture
       for (let i = 0; i < 100000; i++) {
         // Use colors closer to the reference image
         ctx.fillStyle = `hsl(${100 + 40 * Math.random()}, ${70 + 20 * Math.random()}%, ${30 + 20 * Math.random()}%)`;
@@ -49,21 +49,8 @@ const Ground = () => {
     }
   });
   
-  return (
-    <mesh 
-      ref={groundRef} 
-      rotation={[0, Math.PI, 0]} // Rotated 180 degrees around Y-axis to face the camera
-      position={[0, 0, -20]} // Position behind the brain as a wall/backdrop
-      receiveShadow
-    >
-      <planeGeometry args={[2000, 2000]} />
-      <meshStandardMaterial 
-        map={textureRef.current || undefined} 
-        roughness={0.8}
-        metalness={0.2}
-      />
-    </mesh>
-  );
+  // Return null instead of rendering a mesh - effectively removing the ground/wall
+  return null;
 };
 
 export default Ground;

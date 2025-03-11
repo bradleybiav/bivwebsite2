@@ -1,3 +1,4 @@
+
 import React, { useRef, useState, useEffect } from 'react';
 import { Canvas, useFrame, useLoader, extend } from '@react-three/fiber';
 import { OrbitControls, PerspectiveCamera } from '@react-three/drei';
@@ -245,7 +246,7 @@ const BrainScene = () => {
         <directionalLight position={[1, 1, 1]} intensity={0.5} />
         <pointLight position={[0, 10, 0]} intensity={0.5} color="#D946EF" />
         
-        <PerspectiveCamera makeDefault position={[0, 5, 15]} />
+        <PerspectiveCamera makeDefault position={[0, 5, 30]} />
         <OrbitControls 
           enableDamping 
           dampingFactor={0.05} 
@@ -253,7 +254,7 @@ const BrainScene = () => {
           autoRotate={false}
         />
         
-        <fog attach="fog" args={['#000000', 15, 30]} />
+        <fog attach="fog" args={['#000000', 25, 40]} />
         <Ground />
         <Brain />
       </Canvas>

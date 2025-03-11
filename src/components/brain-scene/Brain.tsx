@@ -11,9 +11,9 @@ interface BrainProps {
 
 const Brain = ({ isMobile = false }: BrainProps) => {
   // Mobile specific adjustments for position and scale
-  const basePosition: [number, number, number] = isMobile ? [0, 0, 0] : [0, 0.97, 0];
+  const basePosition: [number, number, number] = isMobile ? [0, -1, 0] : [0, 0.97, 0];
   const baseRotation: [number, number, number] = [0, 0, 0];
-  const baseScale = isMobile ? 7.0 : 4.5; // Much larger scale for mobile
+  const baseScale = isMobile ? 2.5 : 4.5; // Smaller scale but closer to camera for mobile
 
   const brainRef = useRef<THREE.Group>();
   const materialRef = useRef<any>();

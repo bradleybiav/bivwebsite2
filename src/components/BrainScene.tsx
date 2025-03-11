@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, PerspectiveCamera } from '@react-three/drei';
 import Brain from './brain-scene/Brain';
+import '../styles_brain_v20.css';
 
 // Main scene component
 const BrainScene = () => {
@@ -23,21 +24,22 @@ const BrainScene = () => {
   }, []);
 
   return (
-    <div style={{ 
+    <div id="container" style={{ 
       width: '100%', 
       height: '100vh', 
       overflow: 'hidden',
-      backgroundColor: '#000000'
+      backgroundColor: '#000000',
+      position: 'relative'
     }}>
       <Canvas shadows>
-        <ambientLight intensity={1.0} />
-        <directionalLight position={[1, 1, 1]} intensity={1.0} />
-        <pointLight position={[0, 10, 0]} intensity={1.0} color="#D946EF" />
+        <ambientLight intensity={1.5} />
+        <directionalLight position={[1, 1, 1]} intensity={1.5} />
+        <pointLight position={[0, 10, 0]} intensity={2.0} color="#D946EF" />
         
         <PerspectiveCamera 
           makeDefault 
-          position={isMobile ? [0, 0, 12] : [280.47, -4.24, -2.98]} 
-          fov={isMobile ? 90 : 75}
+          position={isMobile ? [0, 0, 5] : [280.47, -4.24, -2.98]} 
+          fov={isMobile ? 60 : 75}
         />
         <OrbitControls 
           enableDamping 
@@ -47,9 +49,12 @@ const BrainScene = () => {
           autoRotateSpeed={isMobile ? 1.0 : 0.5}
         />
         
-        <fog attach="fog" args={['#000000', isMobile ? 15 : 25, isMobile ? 30 : 40]} />
+        <fog attach="fog" args={['#000000', isMobile ? 5 : 25, isMobile ? 15 : 40]} />
         <Brain isMobile={isMobile} />
       </Canvas>
+      
+      {/* Text label at the bottom */}
+      <a href="#" style={{ textDecoration: 'none' }}>VAT BRAIN</a>
     </div>
   );
 };

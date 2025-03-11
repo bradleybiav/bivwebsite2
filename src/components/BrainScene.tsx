@@ -9,13 +9,13 @@ import PositionTool from './brain-scene/PositionTool';
 const BrainScene = () => {
   return (
     <div style={{ width: '100%', height: '100vh', overflow: 'hidden', background: 'black' }}>
-      <Canvas>
+      <Canvas shadows>
         <ambientLight intensity={1.0} />
         <directionalLight position={[1, 1, 1]} intensity={1.0} />
         <pointLight position={[0, 10, 0]} intensity={1.0} color="#D946EF" />
         
-        {/* Updated camera position per user's request */}
-        <PerspectiveCamera makeDefault position={[280.47, -4.24, -2.98]} />
+        {/* Camera positioned for a good view of the brain */}
+        <PerspectiveCamera makeDefault position={[0, 0, 10]} />
         <OrbitControls 
           enableDamping 
           dampingFactor={0.05} 

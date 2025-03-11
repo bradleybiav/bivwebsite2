@@ -52,7 +52,7 @@ const Ground = () => {
   return (
     <mesh 
       ref={groundRef} 
-      rotation={[0, 0, 0]} 
+      rotation={[0, Math.PI, 0]} // Rotated 180 degrees around Y-axis to face the camera
       position={[0, 0, -20]} // Position behind the brain as a wall/backdrop
       receiveShadow
     >

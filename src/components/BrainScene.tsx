@@ -46,8 +46,6 @@ const BrainScene = () => {
         <fog attach="fog" args={['#000000', isMobile ? 3 : 25, isMobile ? 8 : 40]} />
         <Brain isMobile={isMobile} />
       </Canvas>
-      
-      <div className="brain-text">VAT BRAIN</div>
     </div>
   );
 };

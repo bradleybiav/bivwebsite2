@@ -23,32 +23,8 @@ canvas {
     position: relative;
 }
 
-.brain-text {
-    position: absolute;
-    bottom: 120px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 8rem;
-    font-family: "Helvetica Neue", Arial, sans-serif;
-    font-weight: bold;
-    text-decoration: none;
-    color: white;
-    text-align: center;
-    white-space: nowrap;
-    z-index: 10;
-    text-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
-}
-
 /* Mobile-specific styles */
 @media only screen and (max-width: 768px) {
-    .brain-text {
-        font-size: 15vw;
-        line-height: 1.2;
-        white-space: nowrap;
-        bottom: 50px;
-        text-shadow: 0 0 15px rgba(255, 255, 255, 0.6);
-    }
-    
     body {
         /* Force black background on mobile */
         background-color: #000000 !important;

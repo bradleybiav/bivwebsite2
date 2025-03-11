@@ -1,3 +1,4 @@
+
 // Log script start
 console.log("Script loaded and executed.");
 
@@ -29,7 +30,7 @@ directionalLight.castShadow = true; // Enable shadows from this light
 scene.add(directionalLight);
 
 // Create a placeholder brain using a Three.js primitive
-console.log("Creating a placeholder brain since the GLB model is not available...");
+console.log("Creating a placeholder brain while attempting to load the GLB model...");
 let brain, dotCloud;
 
 // Create a placeholder brain using a sphere
@@ -45,11 +46,37 @@ scene.add(brain);
 // Initialize quaternion for rotation
 brain.quaternion.set(0, 0, 0, 1);
 
+// Function to create and add a cloud of colored dots
+function addColoredDotCloud() {
+    const dotCount = 300;
+    const dotGroup = new THREE.Group();
+    
+    for (let i = 0; i < dotCount; i++) {
+        const dotGeometry = new THREE.SphereGeometry(0.1, 8, 8);
+        const dotMaterial = new THREE.MeshBasicMaterial({ color: getRandomColor() });
+        const dot = new THREE.Mesh(dotGeometry, dotMaterial);
+        
+        // Position dots in a spherical pattern around the brain
+        const radius = 15;
+        const theta = Math.random() * Math.PI * 2;
+        const phi = Math.random() * Math.PI;
+        
+        dot.position.x = radius * Math.sin(phi) * Math.cos(theta);
+        dot.position.y = radius * Math.sin(phi) * Math.sin(theta);
+        dot.position.z = radius * Math.cos(phi);
+        
+        dotGroup.add(dot);
+    }
+    
+    scene.add(dotGroup);
+    return dotGroup;
+}
+
 // Create and add the cloud of colored dots
 dotCloud = addColoredDotCloud();
 
-// Attempt to load the GLB model if it becomes available
-// This section will try to load the model but won't break the site if it fails
+// Attempt to load the GLB model now that the file should be available
+console.log("Attempting to load the 3D brain model...");
 const loader = new THREE.GLTFLoader();
 loader.load('brainBBBBB.glb', function (gltf) {
     console.log("GLB model loaded successfully!");

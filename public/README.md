@@ -1,13 +1,14 @@
 
 # Public Assets
 
-This directory is for public assets like:
+This directory contains the following public assets:
 
-1. `favicon_vat_transparent_final_2.ico` - The site favicon
-2. `brainBBBBB.glb` - The 3D brain model
+1. `favicon_vat_transparent_final_2.ico` - The site favicon (✅ Uploaded)
+2. `brainBBBBB.glb` - The 3D brain model (✅ Uploaded)
 
-Please upload these files to this directory when possible.
+These files are now accessible to the project and can be used in the HTML and JavaScript files.
 
-## Temporary Solutions
-- A brain emoji SVG is being used as a temporary favicon
-- The 3D scene will attempt to load the GLB model if available, or use a placeholder sphere if not
+## Current Implementation
+- The favicon is being used in the `index.html` file
+- The 3D brain model is being loaded in the `script_brain_v20.js` file
+

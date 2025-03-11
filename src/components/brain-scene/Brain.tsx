@@ -1,14 +1,19 @@
+
 import React, { useRef, useEffect } from 'react';
 import { useFrame, useLoader } from '@react-three/fiber';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import * as THREE from 'three';
 import ScreamShaderMaterial from './ScreamShaderMaterial';
 
-const Brain = () => {
-  // Adjust the scale to a more moderate size
-  const basePosition: [number, number, number] = [0, 0.97, 0];
+interface BrainProps {
+  isMobile?: boolean;
+}
+
+const Brain = ({ isMobile = false }: BrainProps) => {
+  // Adjust the scale to a more moderate size, further reduced on mobile
+  const basePosition: [number, number, number] = isMobile ? [0, 0, 0] : [0, 0.97, 0];
   const baseRotation: [number, number, number] = [0, 0, 0];
-  const baseScale = 4.5; // Changed from 6.0 to 4.5 for a more moderate size
+  const baseScale = isMobile ? 3.5 : 4.5; // Smaller on mobile
 
   const brainRef = useRef<THREE.Group>();
   const materialRef = useRef<any>();
@@ -31,8 +36,8 @@ const Brain = () => {
     }
     
     if (brainRef.current) {
-      // Simple rotation
-      brainRef.current.rotation.y += 0.003;
+      // Simple rotation - slightly faster on mobile for better effect
+      brainRef.current.rotation.y += isMobile ? 0.004 : 0.003;
       
       // Floating animation based on the basePosition
       const time = clock.getElapsedTime();

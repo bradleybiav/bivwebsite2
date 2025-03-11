@@ -3,7 +3,7 @@ body {
     margin: 0;
     overflow: hidden;
     font-family: "Helvetica Neue", Arial, sans-serif;
-    background-color: #111111;
+    background-color: #000000;
     color: #fff;
 }
 
@@ -28,7 +28,7 @@ canvas {
     text-align: center; /* Center the text */
     white-space: nowrap; /* Prevent the text from wrapping to multiple lines */
     z-index: 10; /* Ensure text appears above the Three.js canvas */
-    text-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Add shadow to make text more readable against the animated background */
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.4); /* Add stronger shadow for better readability */
 }
 
 /* Mobile-specific styles */
@@ -37,5 +37,12 @@ canvas {
         font-size: 15vw; /* Adjust text size on mobile */
         line-height: 1.2; /* Adjust line spacing for mobile */
         white-space: nowrap; /* Ensure text stays on one line */
+        bottom: 30vh; /* Position text higher on mobile */
+        text-shadow: 0 0 15px rgba(255, 255, 255, 0.6); /* Enhanced glow for mobile */
+    }
+    
+    body {
+        /* Force black background on mobile */
+        background-color: #000000 !important;
     }
 }

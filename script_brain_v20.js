@@ -285,13 +285,13 @@ function updateScreamAnimation() {
   }
 }
 
-// Animation loop - MODIFIED for globe-like brain rotation
+// Animation loop - MODIFIED for globe-like brain rotation with increased speed
 function animate() {
   requestAnimationFrame(animate);
   
   if (brain) {
     // Create continuous rotation around the Y axis (like a globe)
-    brain.rotation.y += 0.005; // Speed up the rotation for more visible globe-like effect
+    brain.rotation.y += 0.008; // Increased by 60% from 0.005 to 0.008
     
     // No rotation on X or Z axes to maintain a globe-like spin
     

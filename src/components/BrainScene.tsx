@@ -1,13 +1,22 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, PerspectiveCamera } from '@react-three/drei';
 import Brain from './brain-scene/Brain';
 import '../styles_brain_v20.css';
 
+// Fallback component to show while loading
+const LoadingFallback = () => (
+  <mesh>
+    <sphereGeometry args={[1, 16, 16]} />
+    <meshStandardMaterial color="#9333ea" wireframe />
+  </mesh>
+);
+
 // Main scene component
 const BrainScene = () => {
   const [isMobile, setIsMobile] = useState(false);
+  const [hasError, setHasError] = useState(false);
   
   // Check if device is mobile
   useEffect(() => {
@@ -20,6 +29,20 @@ const BrainScene = () => {
     
     return () => {
       window.removeEventListener('resize', checkIsMobile);
+    };
+  }, []);
+
+  // Error boundary approach using useEffect (simpler than ErrorBoundary component)
+  useEffect(() => {
+    const handleError = (event: ErrorEvent) => {
+      console.error('Error caught by window error handler:', event.error);
+      setHasError(true);
+    };
+
+    window.addEventListener('error', handleError);
+    
+    return () => {
+      window.removeEventListener('error', handleError);
     };
   }, []);
 
@@ -44,7 +67,10 @@ const BrainScene = () => {
         />
         
         <fog attach="fog" args={['#000000', isMobile ? 3 : 25, isMobile ? 8 : 40]} />
-        <Brain isMobile={isMobile} />
+        
+        <Suspense fallback={<LoadingFallback />}>
+          <Brain isMobile={isMobile} />
+        </Suspense>
       </Canvas>
     </div>
   );

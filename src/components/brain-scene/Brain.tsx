@@ -1,5 +1,5 @@
 
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { useFrame, useLoader } from '@react-three/fiber';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import * as THREE from 'three';
@@ -17,13 +17,44 @@ const Brain = ({ isMobile = false }: BrainProps) => {
 
   const brainRef = useRef<THREE.Group>();
   const materialRef = useRef<any>();
+  const [modelError, setModelError] = useState<string | null>(null);
   
-  // Use a relative path that works on both local dev and production
-  const modelPath = window.location.hostname === 'localhost' 
-    ? '/brainBBBBB.glb' 
-    : './brainBBBBB.glb';
+  // Try multiple paths to find the model
+  const possiblePaths = [
+    '/brainBBBBB.glb',        // Absolute path for development
+    './brainBBBBB.glb',       // Relative path for production
+    '../brainBBBBB.glb',      // One directory up
+    'brainBBBBB.glb'          // Just the filename
+  ];
   
-  const gltf = useLoader(GLTFLoader, modelPath);
+  // Use the first path for initial loading
+  let modelPath = possiblePaths[0];
+  
+  // If we're not on localhost, start with the relative path
+  if (window.location.hostname !== 'localhost') {
+    modelPath = possiblePaths[1];
+  }
+  
+  // Use error handling with the loader
+  const gltf = useLoader(
+    GLTFLoader, 
+    modelPath, 
+    undefined,
+    (error) => {
+      console.error('Error loading model:', error);
+      setModelError(`Failed to load model: ${error.message}`);
+    }
+  );
+  
+  useEffect(() => {
+    // Log successful loading
+    if (gltf) {
+      console.log('Model loaded successfully from:', modelPath);
+    }
+    
+    // If we have an error and there are more paths to try, we could implement
+    // fallback loading here in a more complex app
+  }, [gltf, modelPath]);
   
   useFrame(({ clock }) => {
     if (materialRef.current) {
@@ -66,9 +97,15 @@ const Brain = ({ isMobile = false }: BrainProps) => {
     }
   }, []);
 
+  // If there's an error loading the model, we still return null to not break the scene
+  if (modelError) {
+    console.error(modelError);
+    return null;
+  }
+
   return (
     <primitive 
-      object={gltf.scene.clone()} 
+      object={gltf?.scene.clone()} 
       ref={brainRef} 
       position={basePosition} 
       rotation={baseRotation}

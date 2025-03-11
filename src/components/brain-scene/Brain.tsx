@@ -14,6 +14,10 @@ const Brain: React.FC<BrainProps> = ({ onPositionChange }) => {
   const materialRef = useRef<any>();
   const gltf = useLoader(GLTFLoader, '/brainBBBBB.glb');
   
+  // Base values (initial starting position)
+  const basePosition: [number, number, number] = [0, 0.8, 0];
+  const baseScale = 3.44;
+  
   // Animation loop
   useFrame(({ clock }) => {
     if (materialRef.current) {
@@ -31,23 +35,33 @@ const Brain: React.FC<BrainProps> = ({ onPositionChange }) => {
     }
     
     if (brainRef.current) {
+      const time = clock.getElapsedTime();
+      
       // Simple rotation
       brainRef.current.rotation.y += 0.003;
       
       // Floating animation
-      const time = clock.getElapsedTime();
-      brainRef.current.position.y = 0.8 + Math.sin(time * 0.5) * 0.2;
+      brainRef.current.position.y = basePosition[1] + Math.sin(time * 0.5) * 0.2;
       
       // Breathing animation
-      const breathScale = 3.44 / 3.5 + Math.sin(time * 0.8) * 0.02;
-      brainRef.current.scale.set(3.44 * breathScale, 3.44 * breathScale, 3.44 * breathScale);
+      const breathScale = baseScale / 3.5 + Math.sin(time * 0.8) * 0.02;
+      const currentScale = baseScale * breathScale;
+      brainRef.current.scale.set(currentScale, currentScale, currentScale);
       
       // Call the callback with current position and rotation
       if (onPositionChange) {
         onPositionChange(
-          [brainRef.current.position.x, brainRef.current.position.y, brainRef.current.position.z],
-          [brainRef.current.rotation.x, brainRef.current.rotation.y, brainRef.current.rotation.z],
-          3.44 * breathScale
+          [
+            brainRef.current.position.x, 
+            brainRef.current.position.y, 
+            brainRef.current.position.z
+          ],
+          [
+            brainRef.current.rotation.x, 
+            brainRef.current.rotation.y, 
+            brainRef.current.rotation.z
+          ],
+          currentScale
         );
       }
     }
@@ -73,8 +87,8 @@ const Brain: React.FC<BrainProps> = ({ onPositionChange }) => {
     <primitive 
       object={gltf.scene.clone()} 
       ref={brainRef} 
-      position={[0, 0.8, 0]} 
-      scale={[3.44, 3.44, 3.44]} 
+      position={basePosition} 
+      scale={[baseScale, baseScale, baseScale]} 
     />
   );
 };

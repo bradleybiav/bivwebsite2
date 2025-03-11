@@ -17,17 +17,18 @@ const CoordinatesDisplay: React.FC<CoordinatesDisplayProps> = ({ position, rotat
         <div>
           <h3 className="font-bold mb-1">Position:</h3>
           <p>X: {formatNumber(position[0])}</p>
-          <p>Y: {formatNumber(position[1])}</p>
+          <p>Y: {formatNumber(position[1])} <span className="text-xs text-gray-400">(animated)</span></p>
           <p>Z: {formatNumber(position[2])}</p>
         </div>
         <div>
           <h3 className="font-bold mb-1">Rotation:</h3>
           <p>X: {formatNumber(rotation[0])}</p>
-          <p>Y: {formatNumber(rotation[1])}</p>
+          <p>Y: {formatNumber(rotation[1])} <span className="text-xs text-gray-400">(animated)</span></p>
           <p>Z: {formatNumber(rotation[2])}</p>
-          <h3 className="font-bold mt-2">Scale: {formatNumber(scale)}</h3>
+          <h3 className="font-bold mt-2">Scale: {formatNumber(scale)} <span className="text-xs text-gray-400">(animated)</span></h3>
         </div>
       </div>
+      <p className="text-xs text-gray-400 mt-2">Note: Values marked (animated) continuously change due to animation</p>
     </div>
   );
 };

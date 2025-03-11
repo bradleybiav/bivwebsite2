@@ -3,7 +3,6 @@ import React, { useState, useRef } from 'react';
 import { Canvas, useThree, useFrame } from '@react-three/fiber';
 import { OrbitControls, PerspectiveCamera } from '@react-three/drei';
 import Brain from './brain-scene/Brain';
-import CoordinatesDisplay from './brain-scene/CoordinatesDisplay';
 import * as THREE from 'three';
 
 // Camera and brain position tracker
@@ -77,12 +76,6 @@ const BrainScene = () => {
         <fog attach="fog" args={['#000000', 25, 40]} />
         <Brain onPositionChange={handlePositionChange} />
       </Canvas>
-      <CoordinatesDisplay 
-        position={brainPosition}
-        rotation={brainRotation}
-        scale={brainScale}
-        cameraPosition={cameraPosition}
-      />
     </div>
   );
 };

@@ -37,8 +37,8 @@ canvas {
         font-size: 15vw; /* Adjust text size on mobile */
         line-height: 1.2; /* Adjust line spacing for mobile */
         white-space: nowrap; /* Ensure text stays on one line */
-        bottom: 30vh; /* Position text higher on mobile */
-        text-shadow: 0 0 15px rgba(255, 255, 255, 0.6); /* Enhanced glow for mobile */
+        bottom: 10vh; /* Position text lower to match the image */
+        text-shadow: 0 0 15px rgba(255, 255, 255, 0.8); /* Enhanced glow for mobile to match image */
     }
     
     body {

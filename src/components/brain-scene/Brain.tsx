@@ -13,7 +13,7 @@ const Brain = ({ isMobile = false }: BrainProps) => {
   // Adjust the scale to a more moderate size, further reduced on mobile
   const basePosition: [number, number, number] = isMobile ? [0, 0, 0] : [0, 0.97, 0];
   const baseRotation: [number, number, number] = [0, 0, 0];
-  const baseScale = isMobile ? 4.0 : 4.5; // Adjusted scale for better mobile visibility
+  const baseScale = isMobile ? 5.5 : 4.5; // Increased scale for better mobile visibility
 
   const brainRef = useRef<THREE.Group>();
   const materialRef = useRef<any>();

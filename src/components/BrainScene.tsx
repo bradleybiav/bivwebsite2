@@ -34,11 +34,11 @@ const BrainScene = () => {
         <directionalLight position={[1, 1, 1]} intensity={1.0} />
         <pointLight position={[0, 10, 0]} intensity={1.0} color="#D946EF" />
         
-        {/* Adjust camera for better mobile viewing */}
+        {/* Adjust camera for better mobile viewing - fixed position to ensure brain is visible */}
         <PerspectiveCamera 
           makeDefault 
-          position={isMobile ? [0, 0, 150] : [280.47, -4.24, -2.98]} 
-          fov={isMobile ? 60 : 75}
+          position={isMobile ? [0, 0, 120] : [280.47, -4.24, -2.98]} 
+          fov={isMobile ? 75 : 75}
         />
         <OrbitControls 
           enableDamping 

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, PerspectiveCamera } from '@react-three/drei';
@@ -7,7 +8,12 @@ import Ground from './brain-scene/Ground';
 // Main scene component
 const BrainScene = () => {
   return (
-    <div style={{ width: '100%', height: '100vh', overflow: 'hidden' }}>
+    <div style={{ 
+      width: '100%', 
+      height: '100vh', 
+      overflow: 'hidden',
+      backgroundColor: '#000000' // Set background to black
+    }}>
       <Canvas>
         <ambientLight intensity={1.0} />
         <directionalLight position={[1, 1, 1]} intensity={1.0} />

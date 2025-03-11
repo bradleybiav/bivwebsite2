@@ -1,4 +1,3 @@
-
 import * as THREE from 'three';
 import { extend } from '@react-three/fiber';
 
@@ -151,7 +150,5 @@ class ScreamShaderMaterial extends THREE.ShaderMaterial {
   }
 }
 
-// Register the custom shader material
-extend({ ScreamShaderMaterial });
-
+// Export the shader material
 export default ScreamShaderMaterial;

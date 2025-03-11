@@ -57,13 +57,13 @@ const BrainScene = () => {
 
   return (
     <div style={{ width: '100%', height: '100vh', overflow: 'hidden', position: 'relative', background: '#000' }}>
-      <Canvas>
+      <Canvas shadows>
         {/* Enhanced lighting for better visibility */}
-        <ambientLight intensity={1.5} />
-        <directionalLight position={[5, 5, 5]} intensity={1.5} />
-        <directionalLight position={[-5, -5, -5]} intensity={1.0} />
-        <pointLight position={[0, 5, 0]} intensity={2.0} color="#D946EF" />
-        <pointLight position={[0, -5, 0]} intensity={1.0} color="#0EA5E9" />
+        <ambientLight intensity={2.5} />
+        <directionalLight position={[5, 5, 5]} intensity={2.5} />
+        <directionalLight position={[-5, -5, -5]} intensity={2.0} />
+        <pointLight position={[0, 5, 0]} intensity={3.0} color="#D946EF" />
+        <pointLight position={[0, -5, 0]} intensity={2.0} color="#0EA5E9" />
         
         {/* Updated camera position based on user's preference */}
         <PerspectiveCamera makeDefault position={[0, 0, 10]} />

@@ -3,6 +3,7 @@ import React from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, PerspectiveCamera } from '@react-three/drei';
 import Brain from './brain-scene/Brain';
+import Ground from './brain-scene/Ground';
 
 // Main scene component
 const BrainScene = () => {
@@ -23,6 +24,7 @@ const BrainScene = () => {
         />
         
         <fog attach="fog" args={['#000000', 25, 40]} />
+        <Ground />
         <Brain />
       </Canvas>
     </div>

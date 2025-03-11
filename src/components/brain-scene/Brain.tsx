@@ -36,7 +36,7 @@ const Brain = () => {
       
       // Breathing animation
       const breathScale = 1 + Math.sin(time * 0.8) * 0.02;
-      brainRef.current.scale.set(4 * breathScale, 4 * breathScale, 4 * breathScale);
+      brainRef.current.scale.set(3.5 * breathScale, 3.5 * breathScale, 3.5 * breathScale);
     }
   });
   
@@ -61,7 +61,7 @@ const Brain = () => {
       object={gltf.scene.clone()} 
       ref={brainRef} 
       position={[0, 1, 0]} 
-      scale={[4, 4, 4]} 
+      scale={[3.5, 3.5, 3.5]} 
     />
   );
 };

@@ -17,8 +17,8 @@ export function createDotCloud(getRandomColor) {
     const dotMaterial = new THREE.MeshBasicMaterial({ color: color });
     const dot = new THREE.Mesh(dotGeometry, dotMaterial);
     
-    // Position dots in sphere with radius 15
-    const radius = 15;
+    // Position dots in sphere with radius 30 (doubled from 15)
+    const radius = 30; // 100% increase from original 15
     const theta = Math.random() * Math.PI * 2;
     const phi = Math.random() * Math.PI;
     

@@ -1,42 +1,61 @@
 
 // Scene setup module
 
+// Create and configure the main scene components
 export function setupScene() {
-  // Create scene
+  console.log("Setting up scene...");
+  
+  // Create renderer with antialias
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setAnimationLoop(animate);
+  document.body.appendChild(renderer.domElement);
+  console.log("Renderer created and appended to body");
+  
+  // Set document body styles
+  document.body.style.margin = '0';
+  document.body.style.overflow = 'hidden';
+  
+  // Create scene with black background
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x111111); // Very dark gray background
+  scene.background = new THREE.Color('black');
+  console.log("Scene created with black background");
+  
+  // Create texture for ground
+  const map = createTexture();
+  map.repeat.set(6, 6);
+  
+  // Create ground plane
+  const ground = new THREE.Mesh(
+    new THREE.BoxBufferGeometry(1800, 10, 1800),
+    new THREE.MeshBasicMaterial({ map: map })
+  );
+  scene.add(ground);
+  console.log("Ground added to scene");
   
   // Setup camera
-  const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-  camera.position.set(0, 0, 50); // Positioned far back to see the orbiting spheres
+  const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 10000);
+  camera.position.set(0, 250, 200);
+  camera.lookAt(ground.position);
   
-  // Setup renderer with antialias for better quality
-  const renderer = new THREE.WebGLRenderer({ antialias: true });
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.setClearColor(0x111111, 1);
-  renderer.setPixelRatio(window.devicePixelRatio);
-  document.body.appendChild(renderer.domElement);
-  
-  // Add lighting to make objects visible
-  const ambientLight = new THREE.AmbientLight(0xffffff, 0.5); // Ambient light
-  scene.add(ambientLight);
-  
-  // Add directional lights from multiple angles for better reflection
-  const directionalLight1 = new THREE.DirectionalLight(0xffffff, 0.8);
-  directionalLight1.position.set(1, 1, 1);
-  scene.add(directionalLight1);
-  
-  const directionalLight2 = new THREE.DirectionalLight(0xffffff, 0.5);
-  directionalLight2.position.set(-1, 0.5, -1);
-  scene.add(directionalLight2);
+  // Setup clock for animation
+  const clock = new THREE.Clock(true);
   
   // Handle window resize
-  window.addEventListener('resize', () => {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-  });
+  window.addEventListener('resize', () => onWindowResize(camera, renderer), false);
+  onWindowResize(camera, renderer);
   
-  // Return scene objects
-  return { scene, camera, renderer, controls: null };
+  return { scene, camera, renderer, clock };
+}
+
+// Window resize handler
+function onWindowResize(camera, renderer) {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight, true);
+}
+
+// Animation function
+function animate() {
+  // This will be imported and used from animation.js
+  // But is needed here for the renderer.setAnimationLoop
 }

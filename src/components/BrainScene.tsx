@@ -1,15 +1,38 @@
 
-import React, { useState } from 'react';
-import { Canvas } from '@react-three/fiber';
+import React, { useState, useRef } from 'react';
+import { Canvas, useThree } from '@react-three/fiber';
 import { OrbitControls, PerspectiveCamera } from '@react-three/drei';
 import Brain from './brain-scene/Brain';
 import CoordinatesDisplay from './brain-scene/CoordinatesDisplay';
+import * as THREE from 'three';
+
+// Camera position tracker component
+const CameraTracker = ({ onCameraChange }) => {
+  const { camera } = useThree();
+  
+  React.useEffect(() => {
+    // Update on camera change
+    const updateCamera = () => {
+      onCameraChange(camera.position);
+    };
+    
+    // Listen for camera updates
+    camera.addEventListener('change', updateCamera);
+    
+    return () => {
+      camera.removeEventListener('change', updateCamera);
+    };
+  }, [camera, onCameraChange]);
+  
+  return null;
+};
 
 // Main scene component
 const BrainScene = () => {
   const [brainPosition, setBrainPosition] = useState<[number, number, number]>([0, 1, 0]);
   const [brainRotation, setBrainRotation] = useState<[number, number, number]>([0, 0, 0]);
   const [brainScale, setBrainScale] = useState<number>(3.5);
+  const [cameraPosition, setCameraPosition] = useState<THREE.Vector3>(new THREE.Vector3(0, 0, 40));
 
   const handlePositionChange = (
     position: [number, number, number],
@@ -19,6 +42,10 @@ const BrainScene = () => {
     setBrainPosition(position);
     setBrainRotation(rotation);
     setBrainScale(scale);
+  };
+
+  const handleCameraChange = (position: THREE.Vector3) => {
+    setCameraPosition(position);
   };
 
   return (
@@ -35,7 +62,13 @@ const BrainScene = () => {
           dampingFactor={0.05} 
           enableZoom={true}
           autoRotate={false}
+          onChange={() => {
+            // This triggers when orbit controls change
+            // The CameraTracker handles the actual update
+          }}
         />
+        
+        <CameraTracker onCameraChange={handleCameraChange} />
         
         <fog attach="fog" args={['#000000', 25, 40]} />
         <Brain onPositionChange={handlePositionChange} />
@@ -44,6 +77,7 @@ const BrainScene = () => {
         position={brainPosition}
         rotation={brainRotation}
         scale={brainScale}
+        cameraPosition={cameraPosition}
       />
     </div>
   );

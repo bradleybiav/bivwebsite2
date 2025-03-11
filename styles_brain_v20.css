@@ -7,46 +7,6 @@ body {
     color: #fff;
 }
 
-/* Main container for all layers */
-#scene-container {
-    position: relative;
-    width: 100vw;
-    height: 100vh;
-    overflow: hidden;
-}
-
-/* Brain layer (bottom) */
-#brain-layer {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 1;
-}
-
-/* Text layer (middle) */
-#text-layer {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 2;
-    pointer-events: auto; /* Allow interaction with text */
-}
-
-/* Dots layer (top) */
-#dots-layer {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 3;
-    pointer-events: none; /* Allow clicks to pass through to layers below */
-}
-
 #container a {
     position: absolute;
     bottom: 120px; /* Position at the bottom */
@@ -68,11 +28,4 @@ body {
         line-height: 1.2; /* Adjust line spacing for mobile */
         white-space: nowrap; /* Ensure text stays on one line */
     }
-}
-
-/* Ensure canvas elements take up full width and height */
-canvas {
-    width: 100%;
-    height: 100%;
-    display: block;
 }

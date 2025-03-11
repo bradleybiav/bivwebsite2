@@ -18,19 +18,10 @@
     <link rel="icon" href="favicon_vat_transparent_final_2.ico" type="image/x-icon">
 </head>
 <body>
-    <div id="scene-container">
-        <!-- Brain layer (bottom) -->
-        <div id="brain-layer"></div>
-        
-        <!-- Text layer (middle) -->
-        <div id="text-layer">
-            <div id="container">
-                <a href="mailto:bradley@braininavat.dance">brain in a vat</a>
-            </div>
-        </div>
-        
-        <!-- Dots layer (top) -->
-        <div id="dots-layer"></div>
+    <!-- Three.js will create canvas elements -->
+    
+    <div id="container">
+        <a href="mailto:bradley@braininavat.dance">brain in a vat</a>
     </div>
     
     <!-- Include Three.js library -->
@@ -46,30 +37,6 @@
     
     <!-- Include Lovable script -->
     <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
-    
-    <!-- Custom script to create layered effect -->
-    <script>
-        // Function to handle new canvas elements created by Three.js
-        const observer = new MutationObserver((mutations) => {
-            mutations.forEach((mutation) => {
-                if (mutation.addedNodes) {
-                    mutation.addedNodes.forEach((node) => {
-                        if (node.nodeName === 'CANVAS') {
-                            // Check which canvas this is (first or second)
-                            if (!document.querySelector('#brain-layer canvas')) {
-                                document.getElementById('brain-layer').appendChild(node);
-                            } else {
-                                document.getElementById('dots-layer').appendChild(node);
-                            }
-                        }
-                    });
-                }
-            });
-        });
-        
-        // Start observing for new canvas elements
-        observer.observe(document.body, { childList: true });
-    </script>
     
     <!-- Main script -->
     <script type="module" src="script_brain_v20.js"></script>

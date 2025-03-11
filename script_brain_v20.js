@@ -1,211 +1,216 @@
 
-// DOM Elements
-document.addEventListener('DOMContentLoaded', function() {
-  // Mobile menu functionality
-  const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
-  const navLinks = document.querySelector('.nav-links');
+// Log script start
+console.log("Script loaded and executed.");
 
-  if (mobileMenuBtn) {
-    mobileMenuBtn.addEventListener('click', function() {
-      navLinks.classList.toggle('show');
-    });
-  }
+// Import necessary Three.js components
+console.log("Scene, camera, and renderer initialized.");
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+const renderer = new THREE.WebGLRenderer();
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.shadowMap.enabled = true; // Enable shadows
+document.body.appendChild(renderer.domElement);
 
-  // Smooth scrolling for anchor links
-  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function(e) {
-      e.preventDefault();
-      const target = document.querySelector(this.getAttribute('href'));
-      if (target) {
-        window.scrollTo({
-          top: target.offsetTop - 80, // Account for fixed header
-          behavior: 'smooth'
-        });
-      }
-      
-      // Close mobile menu if open
-      if (navLinks.classList.contains('show')) {
-        navLinks.classList.remove('show');
-      }
-    });
-  });
+// Set initial camera position even farther away for a smaller perspective on the brain
+camera.position.set(0, 0, 40); // Slightly increase the Z value to zoom out more
 
-  // Navbar scroll effect
-  const navbar = document.querySelector('nav');
-  window.addEventListener('scroll', function() {
-    if (window.scrollY > 50) {
-      navbar.style.padding = '0.5rem 2rem';
-      navbar.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)';
-    } else {
-      navbar.style.padding = '1rem 2rem';
-      navbar.style.boxShadow = 'none';
-    }
-  });
+// Orbit Controls
+const controls = new THREE.OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.05;
+controls.enableZoom = true;
 
-  // Animation on scroll
-  const animatedElements = document.querySelectorAll('.fade-in, .slide-up');
-  
-  function checkInView() {
-    animatedElements.forEach(element => {
-      const elementTop = element.getBoundingClientRect().top;
-      const elementVisible = 150;
-      
-      if (elementTop < window.innerHeight - elementVisible) {
-        element.classList.add('active');
-      }
-    });
-  }
-  
-  window.addEventListener('scroll', checkInView);
-  checkInView(); // Check on initial load
-  
-  // Form validation
-  const contactForm = document.querySelector('.contact-form');
-  if (contactForm) {
-    contactForm.addEventListener('submit', function(e) {
-      e.preventDefault();
-      
-      const nameInput = this.querySelector('input[name="name"]');
-      const emailInput = this.querySelector('input[name="email"]');
-      const messageInput = this.querySelector('textarea[name="message"]');
-      
-      let isValid = true;
-      
-      if (!nameInput.value.trim()) {
-        isValid = false;
-        showError(nameInput, 'Please enter your name');
-      } else {
-        removeError(nameInput);
-      }
-      
-      if (!emailInput.value.trim() || !isValidEmail(emailInput.value)) {
-        isValid = false;
-        showError(emailInput, 'Please enter a valid email');
-      } else {
-        removeError(emailInput);
-      }
-      
-      if (!messageInput.value.trim()) {
-        isValid = false;
-        showError(messageInput, 'Please enter your message');
-      } else {
-        removeError(messageInput);
-      }
-      
-      if (isValid) {
-        // Here you would typically send the form data to a server
-        const formData = {
-          name: nameInput.value,
-          email: emailInput.value,
-          message: messageInput.value
-        };
-        
-        console.log('Form data:', formData);
-        
-        // Show success message
-        const successMessage = document.createElement('div');
-        successMessage.className = 'success-message';
-        successMessage.textContent = 'Thank you for your message! We will get back to you soon.';
-        
-        contactForm.innerHTML = '';
-        contactForm.appendChild(successMessage);
-      }
-    });
-  }
-  
-  function showError(input, message) {
-    const formGroup = input.closest('.form-group');
-    const errorMessage = formGroup.querySelector('.error-message') || document.createElement('div');
-    
-    errorMessage.className = 'error-message';
-    errorMessage.textContent = message;
-    
-    if (!formGroup.querySelector('.error-message')) {
-      formGroup.appendChild(errorMessage);
-    }
-    
-    input.classList.add('error');
-  }
-  
-  function removeError(input) {
-    const formGroup = input.closest('.form-group');
-    const errorMessage = formGroup.querySelector('.error-message');
-    
-    if (errorMessage) {
-      formGroup.removeChild(errorMessage);
-    }
-    
-    input.classList.remove('error');
-  }
-  
-  function isValidEmail(email) {
-    const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    return re.test(String(email).toLowerCase());
-  }
-  
-  // 3D Model Loading (if present)
-  const modelViewer = document.querySelector('model-viewer');
-  if (modelViewer) {
-    modelViewer.addEventListener('load', function() {
-      console.log('3D model loaded successfully');
-    });
-    
-    modelViewer.addEventListener('error', function(error) {
-      console.error('Error loading 3D model:', error);
-    });
-  }
+// Add lights to the scene
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.4); // Soft white light
+scene.add(ambientLight);
+
+const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8); // Brighter directional light
+directionalLight.position.set(10, 10, 10); // Position the light
+directionalLight.castShadow = true; // Enable shadows from this light
+scene.add(directionalLight);
+
+// Load the GLB model
+console.log("Attempting to load GLB model...");
+const loader = new THREE.GLTFLoader();
+let brain, dotCloud;
+
+loader.load('brainBBBBB.glb', function (gltf) {
+	console.log("GLB model loaded successfully!");
+	brain = gltf.scene;
+	brain.scale.set(0.5, 0.5, 0.5); // Adjust scale if necessary
+	brain.position.set(0, 0, 0);
+	
+	// Set the material of the brain to pink initially
+	brain.traverse((child) => {
+	    if (child.isMesh) {
+	        child.material = new THREE.MeshStandardMaterial({ color: 0xff69b4 }); // Set brain color to pink
+	        child.castShadow = true; // Enable shadows for the brain
+	        child.receiveShadow = true; // Enable the brain to receive shadows
+	    }
+	});
+	
+	scene.add(brain);
+	
+	// Initialize quaternion for rotation
+	brain.quaternion.set(0, 0, 0, 1);
+	
+	// Create and add the cloud of colored dots
+	dotCloud = addColoredDotCloud();
+	
+	animate();
+}, undefined, function (error) {
+	console.error('An error happened while loading the GLB model:', error);
 });
 
-// Performance data
-const performances = [
-  {
-    title: 'Movement Research',
-    date: 'May 15, 2023',
-    location: 'Contemporary Dance Studio',
-    description: 'An exploratory session focusing on the relationship between neural pathways and physical movement.',
-    image: 'performance1.jpg'
-  },
-  {
-    title: 'Cognitive Dance',
-    date: 'June 20, 2023',
-    location: 'City Arts Center',
-    description: 'A performance investigating how cognitive processes manifest through dance and improvisation.',
-    image: 'performance2.jpg'
-  },
-  {
-    title: 'Neural Networks',
-    date: 'August 5, 2023',
-    location: 'University Theater',
-    description: 'A collaborative performance with neuroscientists examining the parallels between neural networks and choreographic structures.',
-    image: 'performance3.jpg'
-  }
-];
-
-// Function to dynamically populate performances
-function populatePerformances() {
-  const performanceGrid = document.querySelector('.performance-grid');
-  if (performanceGrid) {
-    performances.forEach(performance => {
-      const card = document.createElement('div');
-      card.className = 'performance-card fade-in';
-      
-      card.innerHTML = `
-        <div class="performance-image" style="background-color: #ddd; height: 200px; display: flex; align-items: center; justify-content: center;">
-          <span>Performance Image</span>
-        </div>
-        <div class="performance-details">
-          <h3>${performance.title}</h3>
-          <p><strong>Date:</strong> ${performance.date}</p>
-          <p><strong>Location:</strong> ${performance.location}</p>
-          <p>${performance.description}</p>
-          <button class="btn">Learn More</button>
-        </div>
-      `;
-      
-      performanceGrid.appendChild(card);
-    });
-  }
+// Create a cloud of random colored dots surrounding the brain
+function addColoredDotCloud() {
+	const dotGeometry = new THREE.SphereGeometry(0.08, 38, 38);
+	const colors = [0xff0000, 0x00ff00, 0x0000ff, 0xffff00, 0x00ffff]; // Red, Green, Blue, Yellow, Cyan
+	const dotGroup = new THREE.Group(); // Create a group to hold all dots
+	
+	for (let i = 0; i < 2000; i++) { // Adjust the number of dots as needed
+	    const dotMaterial = new THREE.MeshBasicMaterial({ color: colors[Math.floor(Math.random() * colors.length)], opacity: 1, transparent: true });
+	    const dot = new THREE.Mesh(dotGeometry, dotMaterial);
+	
+	    // Randomly position dots within a certain radius around the brain
+	    const radius = 10 + Math.random() * 50; // Adjust the radius to control the cloud size (10 to create a donut hole)
+	    const theta = Math.random() * 2 * Math.PI;
+	    const phi = Math.acos(2 * Math.random() - 1);
+	
+	    dot.position.set(
+	        radius * Math.sin(phi) * Math.cos(theta), // X
+	        radius * Math.sin(phi) * Math.sin(theta), // Y
+	        radius * Math.cos(phi)                   // Z
+	    );
+	
+	    dotGroup.add(dot);
+	}
+	
+	scene.add(dotGroup);
+	console.log("Colored dot cloud added around the brain.");
+	return dotGroup; // Return the group so it can be rotated in the animate function
 }
 
-// Call function to populate performances
-window.addEventListener('load', populatePerformances);
+// Function to change dot colors
+function changeDotColors(color, isRandom = false) {
+	if (dotCloud) {
+	    dotCloud.children.forEach((dot) => {
+	        if (isRandom) {
+	            dot.material.color.set(getRandomColor());
+	        } else {
+	            dot.material.color.set(color);
+	        }
+	    });
+	}
+}
+
+// Animation loop
+function animate() {
+	requestAnimationFrame(animate);
+	
+	if (brain) {
+	    const axis = new THREE.Vector3(0, 1, 0); // Rotation around Y-axis
+	    const angle = 0.002; // Rotation speed
+	    const quaternion = new THREE.Quaternion().setFromAxisAngle(axis, angle);
+	    brain.quaternion.multiplyQuaternions(quaternion, brain.quaternion);
+	}
+	
+	if (dotCloud) {
+	    dotCloud.rotation.y -= 0.002; // Rotate the dot cloud in the opposite direction
+	}
+	
+	controls.update();
+	renderer.render(scene, camera);
+}
+
+// Interaction zone to detect mouse/finger movement
+function isWithinZone(x, y) {
+	const screenHeight = window.innerHeight;
+	const screenWidth = window.innerWidth;
+	const rectTop = screenHeight * 0.2; // Top boundary of the zone
+	const rectBottom = screenHeight * 0.9; // Bottom boundary of the zone
+	const rectLeft = screenWidth * 0.2; // Left boundary of the zone
+	const rectRight = screenWidth * 0.8; // Right boundary of the zone
+	
+	return y > rectTop && y < rectBottom && x > rectLeft && x < rectRight;
+}
+
+// For web: handle mouse movements
+document.addEventListener('mousemove', (event) => {
+	if (isWithinZone(event.clientX, event.clientY)) {
+	    if (!toggle) {
+	        triggerColorChange();
+	    }
+	} else {
+	    if (toggle) {
+	        triggerColorChange();
+	    }
+	}
+});
+
+// For mobile: handle touch events
+document.addEventListener('touchmove', (event) => {
+	const touch = event.touches[0];
+	if (isWithinZone(touch.clientX, touch.clientY)) {
+	    if (!toggle) {
+	        triggerColorChange();
+	    }
+	} else {
+	    if (toggle) {
+	        triggerColorChange();
+	    }
+	}
+});
+
+// Trigger color change
+let toggle = true; // To alternate between black/white and random colors
+
+function triggerColorChange() {
+	console.log("Color change triggered - toggling background, text, and dot colors.");
+	const link = document.querySelector('#container a');
+	
+	if (toggle) {
+	    // Switch to random colors
+	    let newTextColor, newBgColor;
+	
+	    do {
+	        newTextColor = getRandomColor();
+	        newBgColor = getRandomColor();
+	    } while (
+	        newTextColor === newBgColor || // Avoid matching text and background colors
+	        areColorsSimilar(newTextColor, newBgColor) // Avoid similar colors for text and background
+	    );
+	
+	    // Apply new colors
+	    link.style.color = newTextColor;
+	    renderer.setClearColor(newBgColor);
+	    changeDotColors(newTextColor); // Change dots to match text color
+	} else {
+	    // Switch back to black/white
+	    link.style.color = '#ffffff'; // Text to white
+	    renderer.setClearColor('#000000'); // Background to black
+	    changeDotColors(null, true); // Change dots back to random colors
+	}
+	
+	// Toggle for next movement
+	toggle = !toggle;
+}
+
+// Function to get a random color from the defined set
+function getRandomColor() {
+	const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#00ffff']; // Red, Green, Blue, Yellow, Cyan
+	return colors[Math.floor(Math.random() * colors.length)];
+}
+
+// Function to check if two colors are similar
+function areColorsSimilar(color1, color2) {
+	const similarPairs = [
+	    ['#ff0000', '#ff00ff'], // Red and Magenta (even though magenta is removed)
+	    ['#00ff00', '#ffff00'], // Green and Yellow
+	    ['#0000ff', '#00ffff']  // Blue and Cyan
+	];
+	return similarPairs.some(pair => pair.includes(color1) && pair.includes(color2));
+}
+
+// Trigger color change on page load
+triggerColorChange();

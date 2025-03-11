@@ -1,4 +1,3 @@
-
 import React, { useRef, useEffect, useState } from 'react';
 import { useFrame, useLoader } from '@react-three/fiber';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -39,7 +38,7 @@ const Brain = ({ isMobile = false }: BrainProps) => {
   }, [modelPath, loadAttempt]);
   
   // Use error handling with the loader
-  const { scene: model, errors } = useLoader(
+  const model = useLoader(
     GLTFLoader, 
     modelPath, 
     undefined,
@@ -122,7 +121,7 @@ const Brain = ({ isMobile = false }: BrainProps) => {
   if (model) {
     return (
       <primitive 
-        object={model.clone()} 
+        object={model.scene.clone()} 
         ref={brainRef} 
         position={basePosition} 
         rotation={baseRotation}

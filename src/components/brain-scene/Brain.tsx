@@ -6,6 +6,11 @@ import * as THREE from 'three';
 import ScreamShaderMaterial from './ScreamShaderMaterial';
 
 const Brain = () => {
+  // Define base position, rotation and scale as requested
+  const basePosition: [number, number, number] = [0, 0.97, 0];
+  const baseRotation: [number, number, number] = [0, 0, 0];
+  const baseScale = 3.43;
+
   const brainRef = useRef<THREE.Group>();
   const materialRef = useRef<any>();
   const gltf = useLoader(GLTFLoader, '/brainBBBBB.glb');
@@ -30,13 +35,14 @@ const Brain = () => {
       // Simple rotation
       brainRef.current.rotation.y += 0.003;
       
-      // Floating animation
+      // Floating animation based on the basePosition
       const time = clock.getElapsedTime();
-      brainRef.current.position.y = 1 + Math.sin(time * 0.5) * 0.2;
+      brainRef.current.position.y = basePosition[1] + Math.sin(time * 0.5) * 0.2;
       
-      // Breathing animation
+      // Breathing animation based on the baseScale
       const breathScale = 1 + Math.sin(time * 0.8) * 0.02;
-      brainRef.current.scale.set(4 * breathScale, 4 * breathScale, 4 * breathScale);
+      const finalScale = baseScale * breathScale;
+      brainRef.current.scale.set(finalScale, finalScale, finalScale);
     }
   });
   
@@ -60,8 +66,9 @@ const Brain = () => {
     <primitive 
       object={gltf.scene.clone()} 
       ref={brainRef} 
-      position={[0, 1, 0]} 
-      scale={[4, 4, 4]} 
+      position={basePosition} 
+      rotation={baseRotation}
+      scale={[baseScale, baseScale, baseScale]} 
     />
   );
 };

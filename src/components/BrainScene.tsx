@@ -13,8 +13,8 @@ const BrainScene = () => {
         <directionalLight position={[1, 1, 1]} intensity={1.0} />
         <pointLight position={[0, 10, 0]} intensity={1.0} color="#D946EF" />
         
-        {/* Camera positioned at the center (0,0,0) so the brain will orbit around it */}
-        <PerspectiveCamera makeDefault position={[0, 0, 0]} />
+        {/* Updated camera position per user's request */}
+        <PerspectiveCamera makeDefault position={[280.47, -4.24, -2.98]} />
         <OrbitControls 
           enableDamping 
           dampingFactor={0.05} 

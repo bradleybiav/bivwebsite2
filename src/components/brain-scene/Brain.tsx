@@ -1,3 +1,4 @@
+
 import React, { useRef, useEffect } from 'react';
 import { useFrame, useLoader } from '@react-three/fiber';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -5,9 +6,8 @@ import * as THREE from 'three';
 import ScreamShaderMaterial from './ScreamShaderMaterial';
 
 const Brain = () => {
-  // Define orbit parameters
-  const orbitRadius = 20; // Distance from center/camera
-  const orbitHeight = 0.97; // Height of the brain from the ground
+  // Define base position, rotation and scale as requested
+  const basePosition: [number, number, number] = [0, 0.97, 0];
   const baseRotation: [number, number, number] = [0, 0, 0];
   const baseScale = 3.43;
 
@@ -32,22 +32,12 @@ const Brain = () => {
     }
     
     if (brainRef.current) {
-      // Calculate orbit position
+      // Increased rotation speed by 65%
+      brainRef.current.rotation.y += 0.003 * 1.65;
+      
+      // Floating animation based on the basePosition
       const time = clock.getElapsedTime();
-      const speed = 0.003 * 1.65; // Keep the same rotation speed
-      const angle = time * speed;
-      
-      // Calculate new position in orbit
-      const x = Math.sin(angle) * orbitRadius;
-      const z = Math.cos(angle) * orbitRadius;
-      
-      // Set position (maintain y value for vertical floating)
-      brainRef.current.position.x = x;
-      brainRef.current.position.z = z;
-      brainRef.current.position.y = orbitHeight + Math.sin(time * 0.5) * 0.2;
-      
-      // Make brain always face the center/camera
-      brainRef.current.rotation.y = angle + Math.PI; // Add PI to face the center
+      brainRef.current.position.y = basePosition[1] + Math.sin(time * 0.5) * 0.2;
       
       // Breathing animation based on the baseScale
       const breathScale = 1 + Math.sin(time * 0.8) * 0.02;
@@ -72,16 +62,11 @@ const Brain = () => {
     }
   }, []);
 
-  // Starting position needs to be on the orbit path
-  const initialX = Math.sin(0) * orbitRadius;
-  const initialZ = Math.cos(0) * orbitRadius;
-  const initialPosition: [number, number, number] = [initialX, orbitHeight, initialZ];
-
   return (
     <primitive 
       object={gltf.scene.clone()} 
       ref={brainRef} 
-      position={initialPosition} 
+      position={basePosition} 
       rotation={baseRotation}
       scale={[baseScale, baseScale, baseScale]} 
     />

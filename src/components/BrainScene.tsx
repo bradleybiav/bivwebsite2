@@ -32,7 +32,7 @@ const BrainScene = () => {
     };
   }, []);
 
-  // Error boundary approach using useEffect (simpler than ErrorBoundary component)
+  // Error boundary approach using useEffect
   useEffect(() => {
     const handleError = (event: ErrorEvent) => {
       console.error('Error caught by window error handler:', event.error);
@@ -46,9 +46,32 @@ const BrainScene = () => {
     };
   }, []);
 
+  // Add a debug message to show on the page
+  const [debugInfo, setDebugInfo] = useState<string>('Scene loading...');
+  
+  useEffect(() => {
+    // Update debug info after a delay
+    const timer = setTimeout(() => {
+      setDebugInfo('If you see this message but no 3D scene, there might be an issue with WebGL or model loading.');
+    }, 5000);
+    
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <div className="brain-container">
+      {/* Add a debug overlay that will only show if there are problems */}
+      <div className="debug-overlay">
+        <p>{debugInfo}</p>
+        {hasError && (
+          <p className="error-message">
+            An error occurred while rendering the scene. Please try a different browser or device.
+          </p>
+        )}
+      </div>
+      
       <Canvas shadows>
+        <color attach="background" args={['#000000']} />
         <ambientLight intensity={1.5} />
         <directionalLight position={[1, 1, 1]} intensity={1.5} />
         <pointLight position={[0, 10, 0]} intensity={2.0} color="#D946EF" />

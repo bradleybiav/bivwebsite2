@@ -18,44 +18,53 @@ const Brain = ({ isMobile = false }: BrainProps) => {
   const brainRef = useRef<THREE.Group>();
   const materialRef = useRef<any>();
   const [modelError, setModelError] = useState<string | null>(null);
+  const [loadAttempt, setLoadAttempt] = useState(0);
   
   // Try multiple paths to find the model
   const possiblePaths = [
-    '/brainBBBBB.glb',        // Absolute path for development
-    './brainBBBBB.glb',       // Relative path for production
-    '../brainBBBBB.glb',      // One directory up
-    'brainBBBBB.glb'          // Just the filename
+    '/brainBBBBB.glb',
+    './brainBBBBB.glb',
+    '../brainBBBBB.glb',
+    'brainBBBBB.glb',
+    'public/brainBBBBB.glb',
+    '/public/brainBBBBB.glb'
   ];
   
-  // Use the first path for initial loading
-  let modelPath = possiblePaths[0];
+  // Use the current attempt index to determine which path to try
+  const modelPath = possiblePaths[loadAttempt % possiblePaths.length];
   
-  // If we're not on localhost, start with the relative path
-  if (window.location.hostname !== 'localhost') {
-    modelPath = possiblePaths[1];
-  }
+  // Log attempts for debugging
+  useEffect(() => {
+    console.log(`Attempting to load model from: ${modelPath} (attempt ${loadAttempt + 1}/${possiblePaths.length})`);
+  }, [modelPath, loadAttempt]);
   
   // Use error handling with the loader
-  const gltf = useLoader(
+  const { scene: model, errors } = useLoader(
     GLTFLoader, 
     modelPath, 
     undefined,
     (error) => {
       console.error('Error loading model:', error);
-      // Fix: Don't try to access .message on ProgressEvent
-      setModelError(`Failed to load model: ${error.type || 'Unknown error'}`);
+      setModelError(`Failed to load model from ${modelPath}: ${error.type || 'Unknown error'}`);
+      
+      // Try the next path if we haven't tried all of them yet
+      if (loadAttempt < possiblePaths.length - 1) {
+        setTimeout(() => {
+          setLoadAttempt(loadAttempt + 1);
+        }, 500); // Small delay before trying next path
+      } else {
+        console.error('All model loading attempts failed');
+      }
     }
   );
   
+  // Check if the model loaded correctly
   useEffect(() => {
-    // Log successful loading
-    if (gltf) {
+    if (model) {
       console.log('Model loaded successfully from:', modelPath);
+      setModelError(null); // Clear any previous errors
     }
-    
-    // If we have an error and there are more paths to try, we could implement
-    // fallback loading here in a more complex app
-  }, [gltf, modelPath]);
+  }, [model, modelPath]);
   
   useFrame(({ clock }) => {
     if (materialRef.current) {
@@ -98,21 +107,32 @@ const Brain = ({ isMobile = false }: BrainProps) => {
     }
   }, []);
 
-  // If there's an error loading the model, we still return null to not break the scene
-  if (modelError) {
-    console.error(modelError);
-    return null;
+  // If we've tried all paths and still have an error, render a fallback sphere
+  if (modelError && loadAttempt >= possiblePaths.length - 1) {
+    console.warn('Using fallback geometry due to model loading failure');
+    return (
+      <mesh position={basePosition} scale={[baseScale * 0.3, baseScale * 0.3, baseScale * 0.3]}>
+        <sphereGeometry args={[1, 32, 32]} />
+        <meshStandardMaterial color="#ff00ff" />
+      </mesh>
+    );
   }
 
-  return (
-    <primitive 
-      object={gltf?.scene.clone()} 
-      ref={brainRef} 
-      position={basePosition} 
-      rotation={baseRotation}
-      scale={[baseScale, baseScale, baseScale]} 
-    />
-  );
+  // Model loaded successfully, render it
+  if (model) {
+    return (
+      <primitive 
+        object={model.clone()} 
+        ref={brainRef} 
+        position={basePosition} 
+        rotation={baseRotation}
+        scale={[baseScale, baseScale, baseScale]} 
+      />
+    );
+  }
+
+  // Still loading or retrying, show nothing
+  return null;
 };
 
 export default Brain;

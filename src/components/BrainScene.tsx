@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, PerspectiveCamera } from '@react-three/drei';
@@ -27,18 +26,17 @@ const BrainScene = () => {
       width: '100%', 
       height: '100vh', 
       overflow: 'hidden',
-      backgroundColor: '#000000' // Ensure black background on all devices
+      backgroundColor: '#000000'
     }}>
       <Canvas shadows>
         <ambientLight intensity={1.0} />
         <directionalLight position={[1, 1, 1]} intensity={1.0} />
         <pointLight position={[0, 10, 0]} intensity={1.0} color="#D946EF" />
         
-        {/* Adjust camera for better mobile viewing - fixed position to ensure brain is visible */}
         <PerspectiveCamera 
           makeDefault 
-          position={isMobile ? [0, 0, 15] : [280.47, -4.24, -2.98]} 
-          fov={isMobile ? 75 : 75}
+          position={isMobile ? [0, 0, 25] : [280.47, -4.24, -2.98]} 
+          fov={75}
         />
         <OrbitControls 
           enableDamping 

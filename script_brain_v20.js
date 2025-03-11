@@ -1,3 +1,4 @@
+
 // Main script for Brain in a Vat visualization
 
 // Global variables
@@ -61,14 +62,14 @@ function loadBrainModel() {
     brain.scale.set(0.5, 0.5, 0.5);
     brain.position.set(0, 0, 0);
     
-    // Set the material of the brain - less shiny
+    // Set the material of the brain - even less shiny
     brain.traverse((child) => {
       if (child.isMesh) {
         child.material = new THREE.MeshStandardMaterial({ 
           color: 0xff69b4, // Pink color for the brain
           emissive: 0x220000, // Slight glow
-          roughness: 0.7,     // Increased roughness to make less shiny
-          metalness: 0.1      // Reduced metalness to make less shiny
+          roughness: 0.9,     // Further increased roughness to make less shiny
+          metalness: 0.05     // Further reduced metalness to make less shiny
         });
         child.castShadow = true;
         child.receiveShadow = true;
@@ -137,9 +138,8 @@ function triggerColorChange() {
     
     // Update dot colors
     dotCloud.children.forEach((dot) => {
-      const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#00ffff'];
-      const color = colors[Math.floor(Math.random() * colors.length)];
-      dot.material.color.set(color);
+      const colorIndex = Math.floor(Math.random() * colors.length);
+      dot.material.color.set(colors[colorIndex]);
     });
   } else {
     // Switch back to black/white
@@ -147,10 +147,10 @@ function triggerColorChange() {
     renderer.setClearColor('#000000'); // Background to black
     
     // Change dots back to random colors
+    const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#00ffff'];
     dotCloud.children.forEach((dot) => {
-      const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#00ffff'];
-      const color = colors[Math.floor(Math.random() * colors.length)];
-      dot.material.color.set(color);
+      const colorIndex = Math.floor(Math.random() * colors.length);
+      dot.material.color.set(colors[colorIndex]);
     });
   }
   

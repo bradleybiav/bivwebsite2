@@ -14,7 +14,7 @@ const BrainScene = () => {
         <pointLight position={[0, 10, 0]} intensity={1.0} color="#D946EF" />
         
         {/* Positioned camera further back for a more zoomed-out view */}
-        <PerspectiveCamera makeDefault position={[0, 3, 30]} />
+        <PerspectiveCamera makeDefault position={[0, 0, 40]} />
         <OrbitControls 
           enableDamping 
           dampingFactor={0.05} 

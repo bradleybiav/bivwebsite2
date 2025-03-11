@@ -1,4 +1,3 @@
-
 // Main script for Brain in a Vat visualization
 
 // Global variables
@@ -39,8 +38,8 @@ function init() {
   // Load 3D brain model
   loadBrainModel();
   
-  // Create dot cloud background
-  createDotCloud();
+  // Create sphere particles background
+  createSphereParticles();
   
   // Handle window resize
   window.addEventListener('resize', onWindowResize);
@@ -134,68 +133,77 @@ function createBrainSphere() {
   console.log("Brain sphere created as fallback");
 }
 
-function createDotCloud() {
-  const particleCount = 3000; // More particles
-  const particles = new THREE.BufferGeometry();
-  const positions = new Float32Array(particleCount * 3);
-  const colors = new Float32Array(particleCount * 3);
+// Create sphere particles instead of dot cloud
+function createSphereParticles() {
+  const particleCount = 1000; // Reduced count because spheres are more resource-intensive
+  const group = new THREE.Group();
   
-  // Generate random positions and colors for particles
+  // Create small sphere geometry to be reused for all particles
+  const sphereGeometry = new THREE.SphereGeometry(0.1, 8, 8);
+  
+  // Vibrant color options for particles
+  const colorChoices = [
+    [1.0, 0.3, 0.8], // Pink
+    [0.5, 0.3, 1.0], // Purple
+    [0.3, 0.7, 1.0], // Blue
+    [0.3, 1.0, 0.7], // Teal
+    [1.0, 0.8, 0.3], // Yellow
+    [1.0, 0.5, 0.2], // Orange
+    [0.2, 0.8, 1.0], // Cyan
+    [0.8, 0.2, 1.0]  // Magenta
+  ];
+  
+  // Create spheres and position them in space
   for (let i = 0; i < particleCount; i++) {
-    const i3 = i * 3;
-    
-    // Position with wider spread and more empty space around the brain
-    positions[i3] = (Math.random() - 0.5) * 40;     // X coordinate
-    positions[i3 + 1] = (Math.random() - 0.5) * 40; // Y coordinate
-    positions[i3 + 2] = (Math.random() - 0.5) * 40; // Z coordinate
+    // Generate random position with wider spread
+    let x = (Math.random() - 0.5) * 40;
+    let y = (Math.random() - 0.5) * 40;
+    let z = (Math.random() - 0.5) * 40;
     
     // Create a hollow sphere effect by removing particles too close to center
-    const distance = Math.sqrt(
-      positions[i3] * positions[i3] + 
-      positions[i3 + 1] * positions[i3 + 1] + 
-      positions[i3 + 2] * positions[i3 + 2]
-    );
+    const distance = Math.sqrt(x * x + y * y + z * z);
     
     if (distance < 5) { // If too close to center
       // Move it farther out
       const factor = 5 / distance;
-      positions[i3] *= factor;
-      positions[i3 + 1] *= factor;
-      positions[i3 + 2] *= factor;
+      x *= factor;
+      y *= factor;
+      z *= factor;
     }
     
-    // More vibrant colors with better distribution
-    const colorChoices = [
-      [1.0, 0.3, 0.8], // Pink
-      [0.5, 0.3, 1.0], // Purple
-      [0.3, 0.7, 1.0], // Blue
-      [0.3, 1.0, 0.7], // Teal
-      [1.0, 0.8, 0.3], // Yellow
-      [1.0, 0.5, 0.2], // Orange
-      [0.2, 0.8, 1.0], // Cyan
-      [0.8, 0.2, 1.0]  // Magenta
-    ];
-    
+    // Select a random color from our palette
     const color = colorChoices[Math.floor(Math.random() * colorChoices.length)];
-    colors[i3] = color[0];
-    colors[i3 + 1] = color[1];
-    colors[i3 + 2] = color[2];
+    
+    // Create material with the chosen color
+    const material = new THREE.MeshPhongMaterial({
+      color: new THREE.Color(color[0], color[1], color[2]),
+      emissive: new THREE.Color(color[0] * 0.2, color[1] * 0.2, color[2] * 0.2),
+      specular: 0xffffff,
+      shininess: 30,
+      transparent: true,
+      opacity: 0.8
+    });
+    
+    // Create sphere mesh with geometry and material
+    const sphere = new THREE.Mesh(sphereGeometry, material);
+    
+    // Set position
+    sphere.position.set(x, y, z);
+    
+    // Store original color data for animation
+    sphere.userData = {
+      originalColor: [...color],
+      speed: Math.random() * 0.5 + 0.5, // Random animation speed
+      phase: Math.random() * Math.PI * 2 // Random starting phase
+    };
+    
+    // Add to group
+    group.add(sphere);
   }
   
-  particles.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-  particles.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-  
-  const particleMaterial = new THREE.PointsMaterial({
-    size: 0.25, // Larger size for better visibility
-    vertexColors: true,
-    transparent: true,
-    opacity: 0.8,
-    sizeAttenuation: true // Makes points smaller with distance
-  });
-  
-  dotCloud = new THREE.Points(particles, particleMaterial);
+  dotCloud = group;
   scene.add(dotCloud);
-  console.log("Dot cloud created");
+  console.log("Sphere particles created");
 }
 
 function animate() {
@@ -228,38 +236,32 @@ function animate() {
     });
   }
   
-  // Update dot cloud rotation
+  // Update sphere particles animation
   if (dotCloud) {
     dotCloud.rotation.y += 0.0003;
     dotCloud.rotation.x += 0.0001;
     
-    // Make dot cloud particles pulse and twinkle
-    const positions = dotCloud.geometry.attributes.position.array;
-    const colors = dotCloud.geometry.attributes.color.array;
+    // Animate each sphere in the group
     const time = Date.now() * 0.001;
     
-    for (let i = 0; i < positions.length; i += 3) {
-      // Subtle pulsing effect based on position
-      const x = positions[i];
-      const y = positions[i + 1];
-      const z = positions[i + 2];
+    dotCloud.children.forEach((sphere) => {
+      const { originalColor, speed, phase } = sphere.userData;
       
-      // Subtle color pulsing
-      const pulseIntensity = 0.05; // Subtle intensity
-      const pulseSpeed = 0.5; // Slower speed
+      // Pulse effect: subtle size variation
+      const pulseFactor = Math.sin(time * speed + phase) * 0.1 + 1;
+      sphere.scale.set(pulseFactor, pulseFactor, pulseFactor);
       
-      const distanceFactor = Math.sin((x + y + z) * 0.01 + time * pulseSpeed) * pulseIntensity + 1;
+      // Color pulsing effect
+      const colorPulse = Math.sin(time * speed + phase) * 0.15 + 1;
+      const r = Math.min(1, originalColor[0] * colorPulse);
+      const g = Math.min(1, originalColor[1] * colorPulse);
+      const b = Math.min(1, originalColor[2] * colorPulse);
       
-      // Apply subtle color variation
-      if (i % 9 === 0) { // Only update some particles each frame for efficiency
-        colors[i] = Math.max(0.2, Math.min(1, colors[i] * distanceFactor));
-        colors[i + 1] = Math.max(0.2, Math.min(1, colors[i + 1] * distanceFactor));
-        colors[i + 2] = Math.max(0.2, Math.min(1, colors[i + 2] * distanceFactor));
+      if (sphere.material) {
+        sphere.material.color.setRGB(r, g, b);
+        sphere.material.emissive.setRGB(r * 0.2, g * 0.2, b * 0.2);
       }
-    }
-    
-    // Mark attributes as needing update
-    dotCloud.geometry.attributes.color.needsUpdate = true;
+    });
   }
   
   // Render the scene

@@ -2,114 +2,94 @@
 // Brain model module
 
 export function loadBrainModel(scene, callback) {
-  // Use the global THREE object instead of importing it
+  // Create loading manager to track progress
+  const loadingManager = new THREE.LoadingManager();
+  loadingManager.onProgress = function(url, itemsLoaded, itemsTotal) {
+    console.log('Loading model: ' + Math.round(itemsLoaded / itemsTotal * 100) + '%');
+  };
   
-  // Set up loader
-  const loader = new THREE.GLTFLoader();
-  let screamOptions = null;
-  
-  // Try to access tsl-textures if it exists
-  if (typeof tsl !== 'undefined' && tsl.scream) {
-    console.log("TSL Textures is available!");
-    
-    // Create Scream texture options with uniforms
-    try {
-      // Create options for Scream texture with uniform values
-      screamOptions = {
-        scale: 1,
-        variety: 1,
-        color: { value: new THREE.Color(0.6, 0.8, 0.3) }, // greenish-purple initial color
-        background: new THREE.Color(0.2, 0.1, 0.3), // Dark purple background
-        seed: { value: 0 } // Dynamic seed value for animation
-      };
-      
-      console.log("Scream options created:", screamOptions);
-    } catch (e) {
-      console.error("Error creating scream options:", e);
-    }
-  } else {
-    console.warn("TSL Textures not available. Will use fallback material.");
-  }
+  // Create a GLTFLoader to load the model
+  const loader = new THREE.GLTFLoader(loadingManager);
   
   // Load the brain model
-  loader.load('brainBBBBB.glb', function(gltf) {
-    console.log("GLB model loaded successfully!");
-    
-    // Get the brain mesh from the loaded model
-    const brain = gltf.scene;
-    brain.scale.set(0.5, 0.5, 0.5);
-    brain.position.set(0, 0, 0); // Ensure brain is centered at origin
-    
-    // Apply material to brain
-    brain.traverse((child) => {
-      if (child.isMesh) {
-        try {
-          if (typeof tsl !== 'undefined' && tsl.scream) {
-            // Create a material with the Scream texture
-            console.log("Applying TSL Scream texture to brain");
-            
-            // Create a standard material
-            const material = new THREE.MeshStandardMaterial({
-              roughness: 0.4,
-              metalness: 0.6
-            });
-            
-            // Apply the Scream texture
-            const screamTexture = new tsl.scream(screamOptions);
-            screamTexture.setMaterial(material);
-            
-            child.material = material;
-          } else {
-            // Fallback to a colorful material if TSL is not available
-            console.log("Using fallback material for brain");
-            child.material = new THREE.MeshStandardMaterial({
-              color: new THREE.Color(0.8, 0.2, 0.6),
-              roughness: 0.4,
-              metalness: 0.6
-            });
-          }
-          
-          child.castShadow = true;
-          child.receiveShadow = true;
-        } catch (e) {
-          console.error("Error applying material to brain:", e);
-          
-          // Use a fallback material if there's an error
-          child.material = new THREE.MeshStandardMaterial({
-            color: new THREE.Color(0.8, 0.2, 0.6),
-            roughness: 0.4,
-            metalness: 0.6
+  loader.load(
+    'brainBBBBB.glb',  // Path to the model
+    function(gltf) {
+      // Model loaded successfully
+      const brain = gltf.scene;
+      
+      // Scale the brain to a reasonable size
+      brain.scale.set(2.2, 2.2, 2.2);
+      
+      // Position the brain in the center but slightly offset
+      brain.position.set(0, -1, 0);
+      
+      // Make the brain emissive for a glowing effect
+      brain.traverse(function(child) {
+        if (child.isMesh) {
+          // Update material to be more colorful and glowing
+          child.material = new THREE.MeshPhongMaterial({
+            color: 0xff00ff,
+            emissive: 0x440044,
+            specular: 0xffffff,
+            shininess: 100,
+            transparent: true,
+            opacity: 0.9
           });
         }
+      });
+      
+      // Add the brain to the scene
+      scene.add(brain);
+      console.log("Brain model loaded and added to scene");
+      
+      // Set up animation mixer if the model has animations
+      let mixer = null;
+      if (gltf.animations && gltf.animations.length) {
+        mixer = new THREE.AnimationMixer(brain);
+        const action = mixer.clipAction(gltf.animations[0]);
+        action.play();
+        console.log("Brain animations set up");
       }
-    });
-    
-    // Add the brain to the scene
-    scene.add(brain);
-    
-    // Call the callback with the brain and screamOptions
-    if (callback) {
-      callback(brain, screamOptions);
+      
+      // Call the callback with the brain
+      if (callback) {
+        callback(brain, mixer);
+      }
+    },
+    // Progress callback
+    function(xhr) {
+      console.log("Loading brain model: " + (xhr.loaded / xhr.total * 100) + "% loaded");
+    },
+    // Error callback
+    function(error) {
+      console.error("Error loading brain model:", error);
+      // Fallback to creating a brain sphere if model fails to load
+      createBrainSphere(scene, callback);
     }
-  }, undefined, function(error) {
-    console.error('An error happened while loading the GLB model:', error);
-  });
+  );
 }
 
-// Update scream animation
-export function updateScreamAnimation(screamOptions) {
-  if (screamOptions && screamOptions.seed && screamOptions.color) {
-    // Animate the seed parameter for movement
-    const time = performance.now();
-    
-    // Update seed with a sine wave pattern for flowing animation
-    screamOptions.seed.value = 3 * Math.sin(time / 3700);
-    
-    // Slowly shift colors over time
-    screamOptions.color.value.set(
-      0.5 + 0.5 * Math.sin(time / 7000),
-      0.5 + 0.5 * Math.sin(time / 8000),
-      0.5 + 0.5 * Math.sin(time / 5000)
-    );
+// Create a colorful brain sphere (fallback if model loading fails)
+function createBrainSphere(scene, callback) {
+  console.log("Creating fallback brain sphere");
+  const geometry = new THREE.SphereGeometry(1, 32, 32);
+  const material = new THREE.MeshPhongMaterial({
+    color: 0xff00ff,
+    emissive: 0x440044,
+    specular: 0xffffff,
+    shininess: 100,
+    transparent: true,
+    opacity: 0.9
+  });
+  
+  const brain = new THREE.Mesh(geometry, material);
+  brain.position.set(0, -1, 0); // Match the position of the brain model
+  scene.add(brain);
+  console.log("Brain sphere created as fallback");
+  
+  // Call the callback with the brain
+  if (callback) {
+    callback(brain, null);
   }
 }

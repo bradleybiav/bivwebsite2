@@ -6,3 +6,4 @@ import { init } from './js/setup.js';
 
 // The init function will be called when the DOM is fully loaded
 console.log("Main script loaded. Setup will begin when DOM is ready.");
+window.addEventListener('DOMContentLoaded', init);

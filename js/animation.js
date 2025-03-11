@@ -1,12 +1,36 @@
 
 // Animation module
 
-export function animate(brain, dotCloud, mixer, clock, renderer, scene, camera) {
-  requestAnimationFrame(() => animate(brain, dotCloud, mixer, clock, renderer, scene, camera));
+export function animate(brain, dotCloud, mixer, clock, renderer, scene, camera, reflectionGroup) {
+  requestAnimationFrame(() => animate(brain, dotCloud, mixer, clock, renderer, scene, camera, reflectionGroup));
   
   // Update animations if mixer exists
   if (mixer) {
     mixer.update(clock.getDelta());
+  }
+  
+  // Update reflection elements
+  if (reflectionGroup) {
+    const time = Date.now() * 0.001;
+    
+    reflectionGroup.children.forEach((child, index) => {
+      // Only animate spheres, not the floor (which is the first child)
+      if (index > 0 && child.userData.originalPos) {
+        const { originalPos, speed, phase } = child.userData;
+        
+        // Gentle floating motion
+        child.position.y = originalPos.y + Math.sin(time * speed + phase) * 0.5;
+        
+        // Subtle rotation
+        child.rotation.x = time * 0.2;
+        child.rotation.y = time * 0.3;
+        
+        // Pulse size
+        const scale = 0.2 + Math.random() * 0.8;
+        const pulseFactor = Math.sin(time * 0.5 + index) * 0.1 + 1;
+        child.scale.set(scale * pulseFactor, scale * pulseFactor, scale * pulseFactor);
+      }
+    });
   }
   
   // Update brain colors and rotation if it exists

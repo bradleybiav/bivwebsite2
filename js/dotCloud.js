@@ -1,10 +1,10 @@
 
 // Dot cloud module
 
-export function createDotCloud() {
+export function createDotCloud(getRandomColor) {
   const dotCloud = new THREE.Group();
   
-  // Create 1500 dots with size 0.1
+  // Create 1500 dots (5x the original 300) with size 0.1
   const dotCount = 1500;
   
   for (let i = 0; i < dotCount; i++) {
@@ -17,10 +17,8 @@ export function createDotCloud() {
     const dotMaterial = new THREE.MeshBasicMaterial({ color: color });
     const dot = new THREE.Mesh(dotGeometry, dotMaterial);
     
-    // Position dots THROUGHOUT the sphere volume with radius 30
-    // For volume distribution we use r * Math.cbrt(Math.random())
-    // This gives proper volume distribution rather than just surface points
-    const radius = 30 * Math.cbrt(Math.random()); // Distribute throughout volume
+    // Position dots in sphere with radius 30 (doubled from 15)
+    const radius = 30; // 100% increase from original 15
     const theta = Math.random() * Math.PI * 2;
     const phi = Math.random() * Math.PI;
     

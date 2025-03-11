@@ -1,4 +1,3 @@
-
 import React, { useRef, useEffect } from 'react';
 import { useFrame, useLoader } from '@react-three/fiber';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -6,10 +5,10 @@ import * as THREE from 'three';
 import ScreamShaderMaterial from './ScreamShaderMaterial';
 
 const Brain = () => {
-  // Increase the scale to make the brain appear larger
+  // Adjust the scale to a more moderate size
   const basePosition: [number, number, number] = [0, 0.97, 0];
   const baseRotation: [number, number, number] = [0, 0, 0];
-  const baseScale = 6.0; // Increased from 3.43 to make it appear larger (equivalent to ~2 zooms)
+  const baseScale = 4.5; // Changed from 6.0 to 4.5 for a more moderate size
 
   const brainRef = useRef<THREE.Group>();
   const materialRef = useRef<any>();

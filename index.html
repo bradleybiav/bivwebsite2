@@ -16,56 +16,23 @@
     <title>Brain in a Vat</title>
     <link rel="stylesheet" href="styles_brain_v20.css">
     <link rel="icon" href="favicon_vat_transparent_final_2.ico" type="image/x-icon">
-    <style>
-        /* Create layers for proper stacking */
-        #brain-layer {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1; /* Bottom layer - the brain */
-        }
-        
-        #text-layer {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 2; /* Middle layer - the text */
-            pointer-events: none; /* Allow clicks to pass through */
-        }
-        
-        #dots-layer {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 3; /* Top layer - the dots */
-            pointer-events: none; /* Allow clicks to pass through to brain */
-        }
-        
-        canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-        }
-    </style>
 </head>
 <body>
-    <!-- Text layer - middle z-index -->
-    <div id="text-layer">
-        <div id="container">
-            <a href="mailto:bradley@braininavat.dance">brain in a vat</a>
+    <div id="scene-container">
+        <!-- Brain layer (bottom) -->
+        <div id="brain-layer"></div>
+        
+        <!-- Text layer (middle) -->
+        <div id="text-layer">
+            <div id="container">
+                <a href="mailto:bradley@braininavat.dance">brain in a vat</a>
+            </div>
         </div>
+        
+        <!-- Dots layer (top) -->
+        <div id="dots-layer"></div>
     </div>
     
-    <!-- Three.js will create canvas elements that we'll organize in our layers through script -->
-
     <!-- Include Three.js library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     
@@ -82,18 +49,13 @@
     
     <!-- Custom script to create layered effect -->
     <script>
-        // Create empty divs for brain and dots layers
-        document.body.insertAdjacentHTML('afterbegin', '<div id="brain-layer"></div>');
-        document.body.insertAdjacentHTML('beforeend', '<div id="dots-layer"></div>');
-        
         // Function to handle new canvas elements created by Three.js
         const observer = new MutationObserver((mutations) => {
             mutations.forEach((mutation) => {
                 if (mutation.addedNodes) {
                     mutation.addedNodes.forEach((node) => {
                         if (node.nodeName === 'CANVAS') {
-                            // Move the first canvas (brain) to brain layer
-                            // And subsequent canvases (dots) to dots layer
+                            // Check which canvas this is (first or second)
                             if (!document.querySelector('#brain-layer canvas')) {
                                 document.getElementById('brain-layer').appendChild(node);
                             } else {

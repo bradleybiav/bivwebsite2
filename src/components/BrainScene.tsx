@@ -38,9 +38,9 @@ const BrainScene = () => {
   
   // This is the position you'll want to use as the starting point
   // The brain component will pick this up and use it
-  const idealPosition: [number, number, number] = [0, 0.8, 0];
+  const idealPosition: [number, number, number] = [0, 0.97, 0];
   const idealRotation: [number, number, number] = [0, 0, 0];
-  const idealScale = 3.44;
+  const idealScale = 3.43;
 
   const handlePositionChange = (
     position: [number, number, number],
@@ -63,8 +63,8 @@ const BrainScene = () => {
         <directionalLight position={[1, 1, 1]} intensity={1.0} />
         <pointLight position={[0, 10, 0]} intensity={1.0} color="#D946EF" />
         
-        {/* Camera with ideal starting position - adjust this based on what looks good */}
-        <PerspectiveCamera makeDefault position={[0, 0, 10]} />
+        {/* Updated camera position based on user's preference */}
+        <PerspectiveCamera makeDefault position={[280.47, -4.24, -2.98]} />
         <OrbitControls 
           enableDamping 
           dampingFactor={0.05} 

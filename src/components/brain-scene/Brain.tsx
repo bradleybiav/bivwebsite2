@@ -14,9 +14,10 @@ const Brain: React.FC<BrainProps> = ({ onPositionChange }) => {
   const materialRef = useRef<any>();
   const gltf = useLoader(GLTFLoader, '/brainBBBBB.glb');
   
-  // Base values (initial starting position)
-  const basePosition: [number, number, number] = [0, 0.8, 0];
-  const baseScale = 3.44;
+  // Updated values based on user's preferred position
+  const basePosition: [number, number, number] = [0, 0.97, 0];
+  const baseRotation: [number, number, number] = [0, 0, 0];
+  const baseScale = 3.43;
   
   // Animation loop
   useFrame(({ clock }) => {

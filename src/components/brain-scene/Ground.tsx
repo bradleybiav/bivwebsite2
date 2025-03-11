@@ -52,8 +52,8 @@ const Ground = () => {
   return (
     <mesh 
       ref={groundRef} 
-      rotation={[-Math.PI / 2, 0, 0]} 
-      position={[0, -5, 0]} // Position below the brain
+      rotation={[0, 0, 0]} 
+      position={[0, 0, -20]} // Position behind the brain as a wall/backdrop
       receiveShadow
     >
       <planeGeometry args={[2000, 2000]} />

@@ -17,10 +17,11 @@
     <link rel="stylesheet" href="styles_brain_v20.css">
     <link rel="icon" href="favicon_vat_transparent_final_2.ico" type="image/x-icon">
     <style>
-        /* Ensure THREE.js canvas is on top of the text */
+        /* Position canvas with higher z-index than text */
         canvas {
             position: relative;
-            z-index: 1;
+            z-index: 2; /* Higher than the text */
+            pointer-events: auto; /* Ensure interaction works */
         }
     </style>
 </head>

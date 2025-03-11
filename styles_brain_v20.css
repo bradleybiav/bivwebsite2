@@ -19,7 +19,7 @@ body {
     color: white;
     text-align: center; /* Center the text */
     white-space: nowrap; /* Prevent the text from wrapping to multiple lines */
-    z-index: -1; /* Place the text behind the Three.js canvas */
+    z-index: 1; /* Place the text in between background and some dots */
 }
 
 /* Mobile-specific styles */

@@ -1,5 +1,5 @@
 
-// Main script for Brain in a Vat visualization with animated noise background
+// Main script for Brain in a Vat visualization with animated grass-like background
 
 // Wait for DOM content to load
 document.addEventListener('DOMContentLoaded', () => {
@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // Setup camera
   const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-  camera.position.set(0, 0, 50); // Positioned far back to see the brain
+  camera.position.set(0, 0, 50); // Positioned to see the brain
   
   // Setup renderer with antialias for better quality
   const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -41,9 +41,9 @@ document.addEventListener('DOMContentLoaded', () => {
   let brain = null;
   const clock = new THREE.Clock();
   
-  // Create animated noise background
-  const createAnimatedNoiseBackground = () => {
-    // Shader materials for the animated noise
+  // Create animated grass-like background using noise
+  const createAnimatedGrassBackground = () => {
+    // Shader materials for the animated grass noise
     const vertexShader = `
       varying vec2 vUv;
       void main() {
@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
       uniform float time;
       varying vec2 vUv;
       
-      // Simplex noise functions from https://github.com/ashima/webgl-noise
+      // Simplex noise functions
       vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
       vec2 mod289(vec2 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
       vec3 permute(vec3 x) { return mod289(((x*34.0)+1.0)*x); }
@@ -88,26 +88,40 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       
       void main() {
-        // Calculate noise at different scales and speeds
-        float scale1 = 3.0;
-        float scale2 = 6.0;
-        float scale3 = 12.0;
+        // Multiple scales of noise for a more detailed grass look
+        float scale1 = 8.0;  // Smaller scale for grass detail
+        float scale2 = 16.0; // Medium scale for variation
+        float scale3 = 24.0; // Larger scale for terrain-like patterns
         
-        float n1 = snoise(vUv * scale1 + vec2(time * 0.1, time * 0.1)) * 0.5 + 0.5;
-        float n2 = snoise(vUv * scale2 + vec2(time * -0.15, time * 0.1)) * 0.5 + 0.5;
-        float n3 = snoise(vUv * scale3 + vec2(time * 0.2, time * -0.1)) * 0.5 + 0.5;
+        // Generate noise at different scales and speeds
+        float n1 = snoise(vUv * scale1 + vec2(time * 0.05, time * 0.07)) * 0.5 + 0.5;
+        float n2 = snoise(vUv * scale2 + vec2(time * -0.06, time * 0.08)) * 0.5 + 0.5;
+        float n3 = snoise(vUv * scale3 + vec2(time * 0.07, time * -0.05)) * 0.5 + 0.5;
         
-        // Mix noise at different levels
-        float noise = (n1 * 0.5 + n2 * 0.3 + n3 * 0.2);
+        // Mix noise at different levels to create variation
+        float noise = (n1 * 0.6 + n2 * 0.3 + n3 * 0.1);
         
-        // Create green-based color palette similar to the demo
-        vec3 color1 = vec3(0.1, 0.4, 0.1);   // Darker green
-        vec3 color2 = vec3(0.2, 0.5, 0.2);   // Medium green
-        vec3 color3 = vec3(0.4, 0.8, 0.4);   // Lighter green
+        // Grass-like colors based on the reference image
+        vec3 darkGreen = vec3(0.1, 0.3, 0.1);  // Dark green for shadow areas
+        vec3 mediumGreen = vec3(0.2, 0.5, 0.2); // Medium green for mid tones
+        vec3 lightGreen = vec3(0.4, 0.7, 0.2);  // Light green for highlights
+        vec3 yellowGreen = vec3(0.5, 0.7, 0.1); // Yellow-green accents
         
         // Mix colors based on noise
-        vec3 finalColor = mix(color1, color2, noise);
-        finalColor = mix(finalColor, color3, noise * noise);
+        vec3 finalColor;
+        
+        // More complex color mixing for realistic grass appearance
+        if (noise < 0.4) {
+          finalColor = mix(darkGreen, mediumGreen, noise * 2.5);
+        } else if (noise < 0.7) {
+          finalColor = mix(mediumGreen, lightGreen, (noise - 0.4) * 3.3);
+        } else {
+          finalColor = mix(lightGreen, yellowGreen, (noise - 0.7) * 3.3);
+        }
+        
+        // Add some random bright spots to simulate light catching on grass blades
+        float sparkle = pow(max(0.0, snoise(vUv * 30.0 + vec2(time * 0.1, time * -0.1))), 5.0) * 0.2;
+        finalColor += vec3(sparkle);
         
         gl_FragColor = vec4(finalColor, 1.0);
       }
@@ -138,8 +152,8 @@ document.addEventListener('DOMContentLoaded', () => {
     return { mesh: backgroundMesh, uniforms: uniforms };
   };
   
-  // Create animated background
-  const animatedBackground = createAnimatedNoiseBackground();
+  // Create animated grass background
+  const animatedBackground = createAnimatedGrassBackground();
   
   // Load brain model
   const loader = new THREE.GLTFLoader();

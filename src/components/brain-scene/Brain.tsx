@@ -36,18 +36,18 @@ const Brain: React.FC<BrainProps> = ({ onPositionChange }) => {
       
       // Floating animation
       const time = clock.getElapsedTime();
-      brainRef.current.position.y = 1 + Math.sin(time * 0.5) * 0.2;
+      brainRef.current.position.y = 0.8 + Math.sin(time * 0.5) * 0.2;
       
       // Breathing animation
-      const breathScale = 1 + Math.sin(time * 0.8) * 0.02;
-      brainRef.current.scale.set(3.5 * breathScale, 3.5 * breathScale, 3.5 * breathScale);
+      const breathScale = 3.44 / 3.5 + Math.sin(time * 0.8) * 0.02;
+      brainRef.current.scale.set(3.44 * breathScale, 3.44 * breathScale, 3.44 * breathScale);
       
       // Call the callback with current position and rotation
       if (onPositionChange) {
         onPositionChange(
           [brainRef.current.position.x, brainRef.current.position.y, brainRef.current.position.z],
           [brainRef.current.rotation.x, brainRef.current.rotation.y, brainRef.current.rotation.z],
-          3.5 * breathScale
+          3.44 * breathScale
         );
       }
     }
@@ -73,8 +73,8 @@ const Brain: React.FC<BrainProps> = ({ onPositionChange }) => {
     <primitive 
       object={gltf.scene.clone()} 
       ref={brainRef} 
-      position={[0, 1, 0]} 
-      scale={[3.5, 3.5, 3.5]} 
+      position={[0, 0.8, 0]} 
+      scale={[3.44, 3.44, 3.44]} 
     />
   );
 };

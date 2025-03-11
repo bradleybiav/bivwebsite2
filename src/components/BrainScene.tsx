@@ -70,7 +70,7 @@ const BrainScene = () => {
         
         <PerspectiveCamera 
           makeDefault 
-          position={isMobile ? [0, 0, 3.5] : [0, 0, 4.5]} 
+          position={isMobile ? [0, 0, 3.5] : [280.47, -4.24, -2.98]} 
           fov={isMobile ? 75 : 75}
         />
         <OrbitControls 

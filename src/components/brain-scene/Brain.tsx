@@ -5,7 +5,11 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import * as THREE from 'three';
 import ScreamShaderMaterial from './ScreamShaderMaterial';
 
-const Brain = () => {
+interface BrainProps {
+  autoRotate?: boolean;
+}
+
+const Brain: React.FC<BrainProps> = ({ autoRotate = false }) => {
   const brainRef = useRef<THREE.Group>();
   const materialRef = useRef<any>();
   const gltf = useLoader(GLTFLoader, '/brainBBBBB.glb');
@@ -24,8 +28,10 @@ const Brain = () => {
     }
     
     if (brainRef.current) {
-      // Simple rotation
-      brainRef.current.rotation.y += 0.003;
+      // Only auto-rotate when enabled
+      if (autoRotate) {
+        brainRef.current.rotation.y += 0.003;
+      }
       
       // Floating animation
       const time = clock.getElapsedTime();

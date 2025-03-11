@@ -19,7 +19,7 @@ function init() {
   
   // Setup camera
   camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-  camera.position.set(0, 0, 5);
+  camera.position.set(0, 0, 10); // Positioned further back to see more of the scene
   
   // Setup renderer with antialias for better quality
   renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -70,10 +70,10 @@ function loadBrainModel() {
       brain = gltf.scene;
       
       // Scale the brain to a reasonable size
-      brain.scale.set(1.5, 1.5, 1.5);
+      brain.scale.set(2.2, 2.2, 2.2); // Increased scale
       
-      // Position the brain in the center
-      brain.position.set(0, 0, 0);
+      // Position the brain in the center but slightly offset
+      brain.position.set(0, -1, 0); // Lowered position
       
       // Make the brain emissive for a glowing effect
       brain.traverse(function(child) {
@@ -129,13 +129,13 @@ function createBrainSphere() {
   });
   
   brain = new THREE.Mesh(geometry, material);
-  brain.position.set(0, 0, 0);
+  brain.position.set(0, -1, 0); // Match the position of the brain model
   scene.add(brain);
   console.log("Brain sphere created as fallback");
 }
 
 function createDotCloud() {
-  const particleCount = 2000;
+  const particleCount = 3000; // More particles
   const particles = new THREE.BufferGeometry();
   const positions = new Float32Array(particleCount * 3);
   const colors = new Float32Array(particleCount * 3);
@@ -144,19 +144,36 @@ function createDotCloud() {
   for (let i = 0; i < particleCount; i++) {
     const i3 = i * 3;
     
-    // Position with wider spread
-    positions[i3] = (Math.random() - 0.5) * 20;
-    positions[i3 + 1] = (Math.random() - 0.5) * 20;
-    positions[i3 + 2] = (Math.random() - 0.5) * 20;
+    // Position with wider spread and more empty space around the brain
+    positions[i3] = (Math.random() - 0.5) * 40;     // X coordinate
+    positions[i3 + 1] = (Math.random() - 0.5) * 40; // Y coordinate
+    positions[i3 + 2] = (Math.random() - 0.5) * 40; // Z coordinate
     
-    // Bright colorful particles
+    // Create a hollow sphere effect by removing particles too close to center
+    const distance = Math.sqrt(
+      positions[i3] * positions[i3] + 
+      positions[i3 + 1] * positions[i3 + 1] + 
+      positions[i3 + 2] * positions[i3 + 2]
+    );
+    
+    if (distance < 5) { // If too close to center
+      // Move it farther out
+      const factor = 5 / distance;
+      positions[i3] *= factor;
+      positions[i3 + 1] *= factor;
+      positions[i3 + 2] *= factor;
+    }
+    
+    // More vibrant colors with better distribution
     const colorChoices = [
       [1.0, 0.3, 0.8], // Pink
       [0.5, 0.3, 1.0], // Purple
       [0.3, 0.7, 1.0], // Blue
       [0.3, 1.0, 0.7], // Teal
       [1.0, 0.8, 0.3], // Yellow
-      [1.0, 0.5, 0.2]  // Orange
+      [1.0, 0.5, 0.2], // Orange
+      [0.2, 0.8, 1.0], // Cyan
+      [0.8, 0.2, 1.0]  // Magenta
     ];
     
     const color = colorChoices[Math.floor(Math.random() * colorChoices.length)];
@@ -169,10 +186,11 @@ function createDotCloud() {
   particles.setAttribute('color', new THREE.BufferAttribute(colors, 3));
   
   const particleMaterial = new THREE.PointsMaterial({
-    size: 0.15, // Larger size for better visibility
+    size: 0.25, // Larger size for better visibility
     vertexColors: true,
     transparent: true,
-    opacity: 0.8
+    opacity: 0.8,
+    sizeAttenuation: true // Makes points smaller with distance
   });
   
   dotCloud = new THREE.Points(particles, particleMaterial);
@@ -212,8 +230,36 @@ function animate() {
   
   // Update dot cloud rotation
   if (dotCloud) {
-    dotCloud.rotation.y += 0.0005;
+    dotCloud.rotation.y += 0.0003;
     dotCloud.rotation.x += 0.0001;
+    
+    // Make dot cloud particles pulse and twinkle
+    const positions = dotCloud.geometry.attributes.position.array;
+    const colors = dotCloud.geometry.attributes.color.array;
+    const time = Date.now() * 0.001;
+    
+    for (let i = 0; i < positions.length; i += 3) {
+      // Subtle pulsing effect based on position
+      const x = positions[i];
+      const y = positions[i + 1];
+      const z = positions[i + 2];
+      
+      // Subtle color pulsing
+      const pulseIntensity = 0.05; // Subtle intensity
+      const pulseSpeed = 0.5; // Slower speed
+      
+      const distanceFactor = Math.sin((x + y + z) * 0.01 + time * pulseSpeed) * pulseIntensity + 1;
+      
+      // Apply subtle color variation
+      if (i % 9 === 0) { // Only update some particles each frame for efficiency
+        colors[i] = Math.max(0.2, Math.min(1, colors[i] * distanceFactor));
+        colors[i + 1] = Math.max(0.2, Math.min(1, colors[i + 1] * distanceFactor));
+        colors[i + 2] = Math.max(0.2, Math.min(1, colors[i + 2] * distanceFactor));
+      }
+    }
+    
+    // Mark attributes as needing update
+    dotCloud.geometry.attributes.color.needsUpdate = true;
   }
   
   // Render the scene

@@ -42,7 +42,8 @@ const Brain = ({ isMobile = false }: BrainProps) => {
     undefined,
     (error) => {
       console.error('Error loading model:', error);
-      setModelError(`Failed to load model: ${error.message}`);
+      // Fix: Don't try to access .message on ProgressEvent
+      setModelError(`Failed to load model: ${error.type || 'Unknown error'}`);
     }
   );
   

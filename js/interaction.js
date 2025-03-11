@@ -1,7 +1,7 @@
 
 // User interaction module
 
-export function setupInteraction(triggerColorChange, toggle) {
+export function setupInteraction(triggerColorChange, getToggleState) {
   // Interaction zone to detect mouse/finger movement
   function isWithinZone(x, y) {
     const screenHeight = window.innerHeight;
@@ -16,6 +16,7 @@ export function setupInteraction(triggerColorChange, toggle) {
 
   // For web: handle mouse movements
   document.addEventListener('mousemove', (event) => {
+    const toggle = getToggleState();
     if (isWithinZone(event.clientX, event.clientY)) {
       if (!toggle) {
         triggerColorChange();
@@ -29,6 +30,7 @@ export function setupInteraction(triggerColorChange, toggle) {
 
   // For mobile: handle touch events
   document.addEventListener('touchmove', (event) => {
+    const toggle = getToggleState();
     const touch = event.touches[0];
     if (isWithinZone(touch.clientX, touch.clientY)) {
       if (!toggle) {

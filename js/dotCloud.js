@@ -2,15 +2,22 @@
 // Dot cloud module
 
 export function createDotCloud(getRandomColor) {
+  const dotCloud = new THREE.Group();
+  
+  // Create 300 dots with size 0.1
   const dotCount = 300;
-  const dotGroup = new THREE.Group();
   
   for (let i = 0; i < dotCount; i++) {
     const dotGeometry = new THREE.SphereGeometry(0.1, 8, 8);
-    const dotMaterial = new THREE.MeshBasicMaterial({ color: getRandomColor() });
+    
+    // Use the color palette
+    const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#00ffff'];
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    
+    const dotMaterial = new THREE.MeshBasicMaterial({ color: color });
     const dot = new THREE.Mesh(dotGeometry, dotMaterial);
     
-    // Position dots in a spherical pattern around the brain
+    // Position dots in sphere with radius 15
     const radius = 15;
     const theta = Math.random() * Math.PI * 2;
     const phi = Math.random() * Math.PI;
@@ -19,20 +26,8 @@ export function createDotCloud(getRandomColor) {
     dot.position.y = radius * Math.sin(phi) * Math.sin(theta);
     dot.position.z = radius * Math.cos(phi);
     
-    dotGroup.add(dot);
+    dotCloud.add(dot);
   }
   
-  return dotGroup;
-}
-
-export function changeDotColors(dotCloud, color, isRandom = false) {
-  if (dotCloud) {
-    dotCloud.children.forEach((dot) => {
-      if (isRandom) {
-        dot.material.color.set(getRandomColor());
-      } else {
-        dot.material.color.set(color);
-      }
-    });
-  }
+  return dotCloud;
 }

@@ -10,9 +10,9 @@ export function setupScene() {
   camera.position.set(0, 0, 40); // Position camera
   
   // Create renderer
-  const renderer = new THREE.WebGLRenderer();
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.shadowMap.enabled = true; // Enable shadows
+  renderer.setClearColor(0x000000); // Set initial background color to black
   document.body.appendChild(renderer.domElement);
   
   // Set up controls

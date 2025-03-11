@@ -7,31 +7,37 @@ export function setupScene() {
   
   // Create camera
   const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-  camera.position.set(0, 0, 40); // Position camera
+  camera.position.z = 30;
+  camera.position.y = 0; // Ensure camera is centered on the y-axis
   
   // Create renderer
-  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
   renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.setClearColor(0x000000); // Set initial background color to black
+  renderer.setClearColor('#000000');
   document.body.appendChild(renderer.domElement);
   
-  // Set up controls
+  // Add ambient light
+  const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+  scene.add(ambientLight);
+  
+  // Add directional light
+  const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+  directionalLight.position.set(10, 10, 10);
+  scene.add(directionalLight);
+  
+  // Add opposite directional light
+  const backLight = new THREE.DirectionalLight(0xffffff, 0.7);
+  backLight.position.set(-10, -10, -10);
+  scene.add(backLight);
+  
+  // Setup orbit controls
   const controls = new THREE.OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
   controls.dampingFactor = 0.05;
-  controls.enableZoom = true;
-  
-  // Add lights
-  const ambientLight = new THREE.AmbientLight(0xffffff, 0.4); // Soft white light
-  scene.add(ambientLight);
-  
-  const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8); // Brighter directional light
-  directionalLight.position.set(10, 10, 10); // Position the light
-  directionalLight.castShadow = true; // Enable shadows from this light
-  scene.add(directionalLight);
+  controls.target.set(0, 0, 0); // Ensure controls are centered at origin
   
   // Handle window resize
-  window.addEventListener('resize', () => {
+  window.addEventListener('resize', function() {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);

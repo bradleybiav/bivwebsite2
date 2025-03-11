@@ -1,45 +1,36 @@
 
-// User interaction module
+// Interaction module
 
-export function setupInteraction(triggerColorChange, getToggleState) {
-  // Interaction zone to detect mouse/finger movement
-  function isWithinZone(x, y) {
-    const screenHeight = window.innerHeight;
-    const screenWidth = window.innerWidth;
-    const rectTop = screenHeight * 0.2; // Top boundary of the zone
-    const rectBottom = screenHeight * 0.9; // Bottom boundary of the zone
-    const rectLeft = screenWidth * 0.2; // Left boundary of the zone
-    const rectRight = screenWidth * 0.8; // Right boundary of the zone
+export function setupInteraction(renderer, dotCloud, screamOptions, triggerColorChange) {
+  // Interaction based on mouse movement - MODIFIED for small dot cloud movement only
+  document.addEventListener('mousemove', function(event) {
+    const moveX = (event.clientX - window.innerWidth / 2) * 0.02;
+    const moveY = (event.clientY - window.innerHeight / 2) * 0.02;
     
-    return y > rectTop && y < rectBottom && x > rectLeft && x < rectRight;
-  }
-
-  // For web: handle mouse movements
-  document.addEventListener('mousemove', (event) => {
-    const toggle = getToggleState();
-    if (isWithinZone(event.clientX, event.clientY)) {
-      if (!toggle) {
-        triggerColorChange();
-      }
-    } else {
-      if (toggle) {
-        triggerColorChange();
+    if (dotCloud) {
+      // Reduce movement factor significantly for subtle effect
+      dotCloud.rotation.y = -moveX * 0.005; // Reduced from 0.02 to 0.005
+      dotCloud.rotation.x = -moveY * 0.005; // Reduced from 0.02 to 0.005
+    }
+  });
+  
+  // Interaction based on device orientation (for mobile devices) - MODIFIED for small dot cloud movement only
+  window.addEventListener('deviceorientation', function(event) {
+    if (event.beta && event.gamma) {
+      const moveX = event.gamma * 0.05; // Left/right tilt
+      const moveY = event.beta * 0.05; // Front/back tilt
+      
+      if (dotCloud) {
+        // Reduce movement factor significantly for subtle effect
+        dotCloud.rotation.y = -moveX * 0.005;
+        dotCloud.rotation.x = -moveY * 0.005;
       }
     }
   });
-
-  // For mobile: handle touch events
-  document.addEventListener('touchmove', (event) => {
-    const toggle = getToggleState();
-    const touch = event.touches[0];
-    if (isWithinZone(touch.clientX, touch.clientY)) {
-      if (!toggle) {
-        triggerColorChange();
-      }
-    } else {
-      if (toggle) {
-        triggerColorChange();
-      }
-    }
-  });
+  
+  // Click or tap to change colors
+  document.addEventListener('click', triggerColorChange);
+  
+  // Change colors every 3 seconds automatically
+  setInterval(triggerColorChange, 3000);
 }

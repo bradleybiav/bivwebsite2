@@ -1,4 +1,3 @@
-
 import React, { useRef, useEffect } from 'react';
 import { useFrame, useLoader } from '@react-three/fiber';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -7,8 +6,8 @@ import ScreamShaderMaterial from './ScreamShaderMaterial';
 
 const Brain = () => {
   // Define orbit parameters
-  const orbitRadius = 10; // Distance from center
-  const basePosition: [number, number, number] = [0, 0.97, 0]; // Initial position
+  const orbitRadius = 20; // Distance from center/camera
+  const orbitHeight = 0.97; // Height of the brain from the ground
   const baseRotation: [number, number, number] = [0, 0, 0];
   const baseScale = 3.43;
 
@@ -45,9 +44,9 @@ const Brain = () => {
       // Set position (maintain y value for vertical floating)
       brainRef.current.position.x = x;
       brainRef.current.position.z = z;
-      brainRef.current.position.y = basePosition[1] + Math.sin(time * 0.5) * 0.2;
+      brainRef.current.position.y = orbitHeight + Math.sin(time * 0.5) * 0.2;
       
-      // Make brain always face center of orbit
+      // Make brain always face the center/camera
       brainRef.current.rotation.y = angle + Math.PI; // Add PI to face the center
       
       // Breathing animation based on the baseScale
@@ -76,7 +75,7 @@ const Brain = () => {
   // Starting position needs to be on the orbit path
   const initialX = Math.sin(0) * orbitRadius;
   const initialZ = Math.cos(0) * orbitRadius;
-  const initialPosition: [number, number, number] = [initialX, basePosition[1], initialZ];
+  const initialPosition: [number, number, number] = [initialX, orbitHeight, initialZ];
 
   return (
     <primitive 

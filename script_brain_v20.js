@@ -1,6 +1,5 @@
 
 // Main script for Brain in a Vat visualization
-import { getRandomColor } from './js/colors.js';
 
 // Global variables
 let scene, camera, renderer, controls;
@@ -27,20 +26,24 @@ function triggerColorChange() {
     renderer.setClearColor(colors[bgColorIndex]);
     
     // Update dot colors
-    dotCloud.children.forEach((dot) => {
-      const colorIndex = Math.floor(Math.random() * colors.length);
-      dot.material.color.set(colors[colorIndex]);
-    });
+    if (dotCloud) {
+      dotCloud.children.forEach((dot) => {
+        const colorIndex = Math.floor(Math.random() * colors.length);
+        dot.material.color.set(colors[colorIndex]);
+      });
+    }
   } else {
     // Switch back to black/white
     link.style.color = '#ffffff'; // Text to white
     renderer.setClearColor('#000000'); // Background to black
     
     // Change dots back to random colors
-    dotCloud.children.forEach((dot) => {
-      const colorIndex = Math.floor(Math.random() * colors.length);
-      dot.material.color.set(colors[colorIndex]);
-    });
+    if (dotCloud) {
+      dotCloud.children.forEach((dot) => {
+        const colorIndex = Math.floor(Math.random() * colors.length);
+        dot.material.color.set(colors[colorIndex]);
+      });
+    }
   }
   
   // Toggle for next movement
@@ -118,7 +121,7 @@ function createDotCloud() {
   return dotCloud;
 }
 
-// Load brain model with TSL texture
+// Load brain model with shader effect similar to XJrMYyV
 function loadBrainModel() {
   // Set up loader
   const loader = new THREE.GLTFLoader();
@@ -132,22 +135,50 @@ function loadBrainModel() {
     brain.scale.set(0.5, 0.5, 0.5);
     brain.position.set(0, 0, 0);
     
-    // Initialize tsl-textures
-    const scream = new tsl.scream();
-    
-    // Set the material of the brain with tsl "Scream" texture
+    // Apply shader material to brain
     brain.traverse((child) => {
       if (child.isMesh) {
-        // Create a standard material with the TSL texture
-        const material = new THREE.MeshStandardMaterial({
-          roughness: 0.4,
-          metalness: 0.6,
+        // Create a custom shader material similar to the CodePen example
+        const vertexShader = `
+          varying vec2 vUv;
+          varying vec3 vPosition;
+          
+          void main() {
+            vUv = uv;
+            vPosition = position;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+          }
+        `;
+        
+        const fragmentShader = `
+          uniform float time;
+          varying vec2 vUv;
+          varying vec3 vPosition;
+          
+          void main() {
+            vec3 pos = vPosition * 2.0;
+            float pattern = sin(pos.x * 10.0 + time) * cos(pos.y * 10.0 + time) * sin(pos.z * 10.0 + time);
+            
+            vec3 color1 = vec3(0.8, 0.2, 0.6); // Pink/purple
+            vec3 color2 = vec3(0.2, 0.8, 0.9); // Blue/cyan
+            
+            vec3 finalColor = mix(color1, color2, pattern * 0.5 + 0.5);
+            
+            gl_FragColor = vec4(finalColor, 1.0);
+          }
+        `;
+        
+        // Create the shader material
+        const shaderMaterial = new THREE.ShaderMaterial({
+          uniforms: {
+            time: { value: 0.0 }
+          },
+          vertexShader: vertexShader,
+          fragmentShader: fragmentShader,
+          side: THREE.DoubleSide
         });
         
-        // Apply the tsl texture
-        scream.setMaterial(material);
-        
-        child.material = material;
+        child.material = shaderMaterial;
         child.castShadow = true;
         child.receiveShadow = true;
       }
@@ -212,12 +243,24 @@ function handleResize() {
   });
 }
 
+// Update shader time uniform
+function updateShaderTime() {
+  if (brain) {
+    brain.traverse((child) => {
+      if (child.isMesh && child.material.uniforms && child.material.uniforms.time) {
+        child.material.uniforms.time.value = performance.now() / 1000;
+      }
+    });
+  }
+}
+
 // Animation loop
 function animate() {
   requestAnimationFrame(animate);
   
   if (brain) {
     brain.rotation.y += 0.002;
+    updateShaderTime();
   }
   
   if (dotCloud) {

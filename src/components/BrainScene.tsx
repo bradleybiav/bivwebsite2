@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, PerspectiveCamera } from '@react-three/drei';
@@ -35,8 +36,8 @@ const BrainScene = () => {
         
         <PerspectiveCamera 
           makeDefault 
-          position={isMobile ? [0, 0, 25] : [280.47, -4.24, -2.98]} 
-          fov={75}
+          position={isMobile ? [0, 0, 12] : [280.47, -4.24, -2.98]} 
+          fov={isMobile ? 90 : 75}
         />
         <OrbitControls 
           enableDamping 
@@ -46,7 +47,7 @@ const BrainScene = () => {
           autoRotateSpeed={isMobile ? 1.0 : 0.5}
         />
         
-        <fog attach="fog" args={['#000000', 25, 40]} />
+        <fog attach="fog" args={['#000000', isMobile ? 15 : 25, isMobile ? 30 : 40]} />
         <Brain isMobile={isMobile} />
       </Canvas>
     </div>

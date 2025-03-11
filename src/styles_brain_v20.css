@@ -3,7 +3,7 @@ body {
     margin: 0;
     overflow: hidden;
     font-family: "Helvetica Neue", Arial, sans-serif;
-    background-color: #000000;
+    background-color: #000000 !important;
     color: #fff;
 }
 
@@ -13,6 +13,10 @@ canvas {
     top: 0;
     left: 0;
     z-index: 1;
+}
+
+.brain-canvas {
+    background-color: #000000 !important;
 }
 
 #container a {
@@ -35,7 +39,7 @@ canvas {
     width: 100%;
     height: 100vh;
     overflow: hidden;
-    background-color: #000000;
+    background-color: #000000 !important;
     position: relative;
 }
 
@@ -47,7 +51,7 @@ canvas {
     z-index: 100;
     color: rgba(255, 255, 255, 0.7);
     font-size: 12px;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.8);
     padding: 8px;
     border-radius: 4px;
     max-width: 80%;

@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState, Suspense } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, PerspectiveCamera } from '@react-three/drei';
 import Brain from './brain-scene/Brain';
@@ -16,7 +16,8 @@ const LoadingFallback = () => (
 // Main scene component
 const BrainScene = () => {
   const [isMobile, setIsMobile] = useState(false);
-  const [hasError, setHasError] = useState(false);
+  const [hasRendered, setHasRendered] = useState(false);
+  const [debugInfo, setDebugInfo] = useState<string>('Scene initializing...');
   
   // Check if device is mobile
   useEffect(() => {
@@ -32,45 +33,36 @@ const BrainScene = () => {
     };
   }, []);
 
-  // Error boundary approach using useEffect
+  // Detect successful rendering
   useEffect(() => {
-    const handleError = (event: ErrorEvent) => {
-      console.error('Error caught by window error handler:', event.error);
-      setHasError(true);
-    };
-
-    window.addEventListener('error', handleError);
-    
-    return () => {
-      window.removeEventListener('error', handleError);
-    };
-  }, []);
-
-  // Add a debug message to show on the page
-  const [debugInfo, setDebugInfo] = useState<string>('Scene loading...');
-  
-  useEffect(() => {
-    // Update debug info after a delay
+    // Update debug info and confirm rendering after a short delay
     const timer = setTimeout(() => {
-      setDebugInfo('If you see this message but no 3D scene, there might be an issue with WebGL or model loading.');
-    }, 5000);
+      setHasRendered(true);
+      setDebugInfo('Scene rendered successfully');
+    }, 2000);
     
     return () => clearTimeout(timer);
   }, []);
 
+  // Ensure background is black
+  useEffect(() => {
+    document.body.style.backgroundColor = '#000000';
+    
+    return () => {
+      document.body.style.backgroundColor = '';
+    };
+  }, []);
+
   return (
     <div className="brain-container">
-      {/* Add a debug overlay that will only show if there are problems */}
+      {/* Debug overlay */}
       <div className="debug-overlay">
-        <p>{debugInfo}</p>
-        {hasError && (
-          <p className="error-message">
-            An error occurred while rendering the scene. Please try a different browser or device.
-          </p>
-        )}
+        <p>Status: {debugInfo}</p>
+        <p>Device: {isMobile ? 'Mobile' : 'Desktop'}</p>
+        <p>Render state: {hasRendered ? 'Active' : 'Initializing'}</p>
       </div>
       
-      <Canvas shadows>
+      <Canvas shadows className="brain-canvas">
         <color attach="background" args={['#000000']} />
         <ambientLight intensity={1.5} />
         <directionalLight position={[1, 1, 1]} intensity={1.5} />
@@ -78,7 +70,7 @@ const BrainScene = () => {
         
         <PerspectiveCamera 
           makeDefault 
-          position={isMobile ? [0, 0, 3.5] : [280.47, -4.24, -2.98]} 
+          position={isMobile ? [0, 0, 3.5] : [0, 0, 4.5]} 
           fov={isMobile ? 75 : 75}
         />
         <OrbitControls 

@@ -18,11 +18,11 @@ export function loadBrainModel(scene, callback) {
       // Model loaded successfully
       const brain = gltf.scene;
       
-      // Scale the brain to a much smaller size
+      // Scale the brain to a smaller size
       brain.scale.set(0.8, 0.8, 0.8);
       
-      // Position the brain in the center but slightly offset
-      brain.position.set(0, -1, 0);
+      // Position the brain in the center
+      brain.position.set(0, 0, 0);
       
       // Make the brain emissive for a glowing effect
       brain.traverse(function(child) {
@@ -84,7 +84,7 @@ function createBrainSphere(scene, callback) {
   });
   
   const brain = new THREE.Mesh(geometry, material);
-  brain.position.set(0, -1, 0); // Match the position of the brain model
+  brain.position.set(0, 0, 0); // Center position
   scene.add(brain);
   console.log("Brain sphere created as fallback");
   

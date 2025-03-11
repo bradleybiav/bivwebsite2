@@ -31,31 +31,30 @@ export function animate(brain, dotCloud, mixer, clock, renderer, scene, camera) 
     });
   }
   
-  // Update sphere particles animation
+  // Update orbital sphere particles animation
   if (dotCloud) {
+    // Slow overall group rotation
     dotCloud.rotation.y += 0.0003;
-    dotCloud.rotation.x += 0.0001;
     
-    // Animate each sphere in the group
+    // Get current time for animations
     const time = Date.now() * 0.001;
     
+    // Update each sphere in the orbital path
     dotCloud.children.forEach((sphere) => {
-      const { originalColor, speed, phase } = sphere.userData;
+      const { orbitRadius, orbitSpeed, orbitPhase, verticalPhase, verticalSpeed } = sphere.userData;
       
-      // Pulse effect: subtle size variation
-      const pulseFactor = Math.sin(time * speed + phase) * 0.1 + 1;
-      sphere.scale.set(pulseFactor, pulseFactor, pulseFactor);
+      // Calculate orbital position
+      const angle = time * orbitSpeed + orbitPhase;
+      const x = Math.cos(angle) * orbitRadius;
+      const z = Math.sin(angle) * orbitRadius;
+      const y = Math.sin(time * verticalSpeed + verticalPhase) * 2; // Vertical oscillation
       
-      // Color pulsing effect
-      const colorPulse = Math.sin(time * speed + phase) * 0.15 + 1;
-      const r = Math.min(1, originalColor[0] * colorPulse);
-      const g = Math.min(1, originalColor[1] * colorPulse);
-      const b = Math.min(1, originalColor[2] * colorPulse);
+      // Update sphere position
+      sphere.position.set(x, y, z);
       
-      if (sphere.material) {
-        sphere.material.color.setRGB(r, g, b);
-        sphere.material.emissive.setRGB(r * 0.2, g * 0.2, b * 0.2);
-      }
+      // Add a gentle rotation to each sphere
+      sphere.rotation.x += 0.01;
+      sphere.rotation.y += 0.01;
     });
   }
   

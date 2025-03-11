@@ -26,10 +26,11 @@ function init() {
   controls = sceneSetup.controls;
   
   // Load 3D brain model
-  loadBrainModel(scene, (loadedBrain) => {
+  loadBrainModel(scene, (loadedBrain, loadedMixer) => {
     brain = loadedBrain;
+    mixer = loadedMixer;
     
-    // Create sphere particles background
+    // Create orbital sphere particles
     dotCloud = createSphereParticles(scene);
     
     // Start animation loop

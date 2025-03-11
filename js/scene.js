@@ -8,7 +8,7 @@ export function setupScene() {
   
   // Setup camera
   const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-  camera.position.set(0, 0, 50); // Positioned much further back to see more of the scene
+  camera.position.set(0, 0, 50); // Positioned far back to see the orbiting spheres
   
   // Setup renderer with antialias for better quality
   const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -18,7 +18,7 @@ export function setupScene() {
   document.body.appendChild(renderer.domElement);
   
   // Add lighting to make objects visible
-  const ambientLight = new THREE.AmbientLight(0xffffff, 0.5); // Slightly dimmer ambient light
+  const ambientLight = new THREE.AmbientLight(0xffffff, 0.5); // Ambient light
   scene.add(ambientLight);
   
   // Add directional lights from multiple angles for better reflection

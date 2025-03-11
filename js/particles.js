@@ -2,66 +2,62 @@
 // Sphere particles module
 
 export function createSphereParticles(scene) {
-  const particleCount = 1000; // Reduced count because spheres are more resource-intensive
+  const particleCount = 50; // Reduced to 50 larger spheres
   const group = new THREE.Group();
   
-  // Create small sphere geometry to be reused for all particles
-  const sphereGeometry = new THREE.SphereGeometry(0.1, 8, 8);
+  // Soccer ball texture (white with black spots)
+  const textureLoader = new THREE.TextureLoader();
+  const texture = textureLoader.load('https://threejs.org/examples/textures/soccer.png');
+  
+  // Parameters for orbital arrangement
+  const orbitRadius = 8; // Radius of the orbit
+  const sphereSize = 0.3; // Larger spheres
+  
+  // Create sphere geometry to be reused for all particles
+  const sphereGeometry = new THREE.SphereGeometry(sphereSize, 16, 16); // Increased resolution
   
   // Vibrant color options for particles
   const colorChoices = [
-    [1.0, 0.3, 0.8], // Pink
-    [0.5, 0.3, 1.0], // Purple
-    [0.3, 0.7, 1.0], // Blue
-    [0.3, 1.0, 0.7], // Teal
-    [1.0, 0.8, 0.3], // Yellow
-    [1.0, 0.5, 0.2], // Orange
-    [0.2, 0.8, 1.0], // Cyan
-    [0.8, 0.2, 1.0]  // Magenta
+    [1.0, 1.0, 1.0], // White
+    [0.9, 0.9, 0.9], // Light gray
+    [0.8, 0.8, 0.8]  // Silver
   ];
   
-  // Create spheres and position them in space
+  // Create spheres and position them in orbit arrangement
   for (let i = 0; i < particleCount; i++) {
-    // Generate random position with wider spread
-    let x = (Math.random() - 0.5) * 40;
-    let y = (Math.random() - 0.5) * 40;
-    let z = (Math.random() - 0.5) * 40;
-    
-    // Create a hollow sphere effect by removing particles too close to center
-    const distance = Math.sqrt(x * x + y * y + z * z);
-    
-    if (distance < 5) { // If too close to center
-      // Move it farther out
-      const factor = 5 / distance;
-      x *= factor;
-      y *= factor;
-      z *= factor;
-    }
-    
     // Select a random color from our palette
     const color = colorChoices[Math.floor(Math.random() * colorChoices.length)];
     
-    // Create material with the chosen color
+    // Create material with the chosen color and soccer ball texture
     const material = new THREE.MeshPhongMaterial({
       color: new THREE.Color(color[0], color[1], color[2]),
-      emissive: new THREE.Color(color[0] * 0.2, color[1] * 0.2, color[2] * 0.2),
+      map: texture,
       specular: 0xffffff,
-      shininess: 30,
-      transparent: true,
-      opacity: 0.8
+      shininess: 30
     });
     
     // Create sphere mesh with geometry and material
     const sphere = new THREE.Mesh(sphereGeometry, material);
     
+    // Calculate a random position on a sphere (for initial orbital arrangement)
+    const phi = Math.acos(-1 + (2 * i) / particleCount);
+    const theta = Math.sqrt(particleCount * Math.PI) * phi;
+    
+    // Convert spherical to Cartesian coordinates
+    const x = orbitRadius * Math.sin(phi) * Math.cos(theta);
+    const y = orbitRadius * Math.sin(phi) * Math.sin(theta);
+    const z = orbitRadius * Math.cos(phi);
+    
     // Set position
     sphere.position.set(x, y, z);
     
-    // Store original color data for animation
+    // Store original position and animation parameters for orbital movement
     sphere.userData = {
-      originalColor: [...color],
-      speed: Math.random() * 0.5 + 0.5, // Random animation speed
-      phase: Math.random() * Math.PI * 2 // Random starting phase
+      orbitRadius: orbitRadius + Math.random() * 2 - 1, // Slightly varied orbit radius
+      orbitSpeed: 0.2 + Math.random() * 0.3, // Random orbit speed
+      orbitPhase: Math.random() * Math.PI * 2, // Random starting phase
+      verticalPhase: Math.random() * Math.PI * 2, // Phase for vertical movement
+      verticalSpeed: 0.1 + Math.random() * 0.2 // Speed for vertical oscillation
     };
     
     // Add to group
@@ -69,7 +65,7 @@ export function createSphereParticles(scene) {
   }
   
   scene.add(group);
-  console.log("Sphere particles created");
+  console.log("Orbital spheres created");
   
   return group;
 }

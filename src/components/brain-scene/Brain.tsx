@@ -1,11 +1,15 @@
 
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { useFrame, useLoader } from '@react-three/fiber';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import * as THREE from 'three';
 import ScreamShaderMaterial from './ScreamShaderMaterial';
 
-const Brain = () => {
+interface BrainProps {
+  onPositionChange?: (position: [number, number, number], rotation: [number, number, number], scale: number) => void;
+}
+
+const Brain: React.FC<BrainProps> = ({ onPositionChange }) => {
   const brainRef = useRef<THREE.Group>();
   const materialRef = useRef<any>();
   const gltf = useLoader(GLTFLoader, '/brainBBBBB.glb');
@@ -37,6 +41,15 @@ const Brain = () => {
       // Breathing animation
       const breathScale = 1 + Math.sin(time * 0.8) * 0.02;
       brainRef.current.scale.set(3.5 * breathScale, 3.5 * breathScale, 3.5 * breathScale);
+      
+      // Call the callback with current position and rotation
+      if (onPositionChange) {
+        onPositionChange(
+          [brainRef.current.position.x, brainRef.current.position.y, brainRef.current.position.z],
+          [brainRef.current.rotation.x, brainRef.current.rotation.y, brainRef.current.rotation.z],
+          3.5 * breathScale
+        );
+      }
     }
   });
   

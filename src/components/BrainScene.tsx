@@ -32,8 +32,8 @@ const BrainScene = () => {
         
         <PerspectiveCamera 
           makeDefault 
-          position={isMobile ? [0, 0, 3.5] : [280.47, -4.24, -2.98]} 
-          fov={isMobile ? 75 : 75}
+          position={isMobile ? [0, 0, 2.5] : [280.47, -4.24, -2.98]} 
+          fov={isMobile ? 90 : 75}
         />
         <OrbitControls 
           enableDamping 
@@ -41,9 +41,11 @@ const BrainScene = () => {
           enableZoom={true}
           autoRotate={true}
           autoRotateSpeed={isMobile ? 2.0 : 0.5}
+          minDistance={isMobile ? 1 : 25}
+          maxDistance={isMobile ? 5 : 40}
         />
         
-        <fog attach="fog" args={['#000000', isMobile ? 3 : 25, isMobile ? 8 : 40]} />
+        <fog attach="fog" args={['#000000', isMobile ? 1 : 25, isMobile ? 10 : 40]} />
         <Brain isMobile={isMobile} />
       </Canvas>
     </div>

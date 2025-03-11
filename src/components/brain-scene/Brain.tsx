@@ -1,3 +1,4 @@
+
 import React, { useRef, useEffect } from 'react';
 import { useFrame, useLoader } from '@react-three/fiber';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -9,10 +10,10 @@ interface BrainProps {
 }
 
 const Brain = ({ isMobile = false }: BrainProps) => {
-  // Center the brain vertically on mobile, keep desktop position
-  const basePosition: [number, number, number] = isMobile ? [0, -0.5, 0] : [0, 0.97, 0];
+  // Significantly different position for mobile to ensure visibility
+  const basePosition: [number, number, number] = isMobile ? [0, 0, 0] : [0, 0.97, 0];
   const baseRotation: [number, number, number] = [0, 0, 0];
-  const baseScale = isMobile ? 1.5 : 4.5; // Smaller scale for mobile
+  const baseScale = isMobile ? 2.5 : 4.5; // Larger scale for mobile
 
   const brainRef = useRef<THREE.Group>();
   const materialRef = useRef<any>();
@@ -35,12 +36,13 @@ const Brain = ({ isMobile = false }: BrainProps) => {
       // Faster rotation for mobile for more visibility
       brainRef.current.rotation.y += isMobile ? 0.02 : 0.003;
       
-      // Adjust vertical position animation
+      // Adjust vertical position animation - smaller oscillation for mobile
       const time = clock.getElapsedTime();
       const verticalOffset = Math.sin(time * 0.5) * (isMobile ? 0.1 : 0.2);
       brainRef.current.position.y = basePosition[1] + verticalOffset;
       
-      const breathScale = 1 + Math.sin(time * 0.8) * 0.02;
+      // More pronounced breathing effect for mobile
+      const breathScale = 1 + Math.sin(time * 0.8) * (isMobile ? 0.05 : 0.02);
       const finalScale = baseScale * breathScale;
       brainRef.current.scale.set(finalScale, finalScale, finalScale);
     }

@@ -7,11 +7,19 @@ export function createDotCloud() {
   // Create 1500 dots with size 0.1
   const dotCount = 1500;
   
+  // Use an enhanced color palette
+  const colors = [
+    '#8B5CF6', // Vivid Purple
+    '#D946EF', // Magenta Pink
+    '#F97316', // Bright Orange
+    '#0EA5E9', // Ocean Blue
+    '#ea384c', // Red
+    '#FEF7CD'  // Soft Yellow
+  ];
+  
   for (let i = 0; i < dotCount; i++) {
     const dotGeometry = new THREE.SphereGeometry(0.1, 8, 8);
     
-    // Use the color palette
-    const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#00ffff'];
     const color = colors[Math.floor(Math.random() * colors.length)];
     
     const dotMaterial = new THREE.MeshBasicMaterial({ color: color });
@@ -32,14 +40,4 @@ export function createDotCloud() {
   }
   
   return dotCloud;
-}
-
-// Update dot cloud colors
-export function updateDotCloudColors(dotCloud, colors) {
-  if (dotCloud) {
-    dotCloud.children.forEach((dot) => {
-      const colorIndex = Math.floor(Math.random() * colors.length);
-      dot.material.color.set(colors[colorIndex]);
-    });
-  }
 }

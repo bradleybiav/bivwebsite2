@@ -1,7 +1,7 @@
 
 // Interaction module
 
-export function setupInteraction(renderer, dotCloud, screamOptions, triggerColorChange) {
+export function setupInteraction(renderer, dotCloud, screamOptions) {
   // Interaction based on mouse movement - MODIFIED for small dot cloud movement only
   document.addEventListener('mousemove', function(event) {
     const moveX = (event.clientX - window.innerWidth / 2) * 0.02;
@@ -27,10 +27,4 @@ export function setupInteraction(renderer, dotCloud, screamOptions, triggerColor
       }
     }
   });
-  
-  // Click or tap to change colors
-  document.addEventListener('click', triggerColorChange);
-  
-  // Change colors every 3 seconds automatically
-  setInterval(triggerColorChange, 3000);
 }

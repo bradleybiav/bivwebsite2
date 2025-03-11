@@ -13,7 +13,8 @@ const BrainScene = () => {
         <directionalLight position={[1, 1, 1]} intensity={1.0} />
         <pointLight position={[0, 10, 0]} intensity={1.0} color="#D946EF" />
         
-        <PerspectiveCamera makeDefault position={[0, 5, 50]} />
+        {/* Updated camera position to show the brain from a front view */}
+        <PerspectiveCamera makeDefault position={[0, 0, 15]} />
         <OrbitControls 
           enableDamping 
           dampingFactor={0.05} 

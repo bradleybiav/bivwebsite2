@@ -1,13 +1,15 @@
 
-import React from 'react';
+import React, { useRef } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, PerspectiveCamera } from '@react-three/drei';
 import Brain from './brain-scene/Brain';
+import Ground from './brain-scene/Ground';
+import ColoredBalls from './brain-scene/ColoredBalls';
 
 // Main scene component
 const BrainScene = () => {
   return (
-    <div style={{ width: '100%', height: '100vh', overflow: 'hidden' }}>
+    <div style={{ width: '100%', height: '100vh', overflow: 'hidden', background: 'black' }}>
       <Canvas>
         <ambientLight intensity={1.0} />
         <directionalLight position={[1, 1, 1]} intensity={1.0} />
@@ -24,6 +26,8 @@ const BrainScene = () => {
         
         <fog attach="fog" args={['#000000', 25, 40]} />
         <Brain />
+        <Ground />
+        <ColoredBalls count={200} />
       </Canvas>
     </div>
   );

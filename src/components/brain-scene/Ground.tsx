@@ -32,8 +32,9 @@ const Ground = () => {
     }
   }, []);
   
+  // Position and rotate as a wall facing the camera
   return (
-    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1, 0]}>
+    <mesh rotation={[0, 0, 0]} position={[0, 0, -15]}>
       <planeGeometry args={[100, 100]} />
       <meshBasicMaterial map={groundTexture.current} />
     </mesh>

@@ -27,9 +27,9 @@ export function loadBrainModel(scene, THREE, callback) {
       console.log("Loading model: 50%");
       const brain = gltf.scene;
       
-      // Enhanced appearance
-      brain.scale.set(8, 8, 8);
-      brain.position.set(0, 110, 0); // Positioned slightly higher
+      // Reduced size (50% of original 8,8,8 scale)
+      brain.scale.set(4, 4, 4);
+      brain.position.set(0, 110, 0); // Keep the same position
       
       // Apply custom material to brain parts if needed
       brain.traverse((child) => {

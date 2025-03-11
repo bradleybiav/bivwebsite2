@@ -21,7 +21,7 @@ export function animate(scene, camera, renderer, clock, brain) {
     
     // Slight "breathing" scale effect
     const breathScale = 1 + Math.sin(time * 0.8) * 0.02;
-    brain.scale.set(8 * breathScale, 8 * breathScale, 8 * breathScale);
+    brain.scale.set(4 * breathScale, 4 * breathScale, 4 * breathScale); // Adjusted for the new scale
     
     // Update any point lights to create dynamic lighting
     scene.children.forEach(child => {

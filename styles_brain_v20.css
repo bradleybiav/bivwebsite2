@@ -28,6 +28,7 @@ canvas {
     text-align: center; /* Center the text */
     white-space: nowrap; /* Prevent the text from wrapping to multiple lines */
     z-index: 10; /* Ensure text appears above the Three.js canvas */
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Add shadow to make text more readable against the animated background */
 }
 
 /* Mobile-specific styles */

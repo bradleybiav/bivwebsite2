@@ -32,8 +32,8 @@ const Brain = () => {
     }
     
     if (brainRef.current) {
-      // Increased rotation speed by 65%
-      brainRef.current.rotation.y += 0.003 * 1.65;
+      // Simple rotation
+      brainRef.current.rotation.y += 0.003;
       
       // Floating animation based on the basePosition
       const time = clock.getElapsedTime();

@@ -37,15 +37,15 @@ const BrainScene = () => {
         {/* Adjust camera for better mobile viewing */}
         <PerspectiveCamera 
           makeDefault 
-          position={isMobile ? [0, 0, 200] : [280.47, -4.24, -2.98]} 
-          fov={isMobile ? 55 : 75}
+          position={isMobile ? [0, 0, 150] : [280.47, -4.24, -2.98]} 
+          fov={isMobile ? 60 : 75}
         />
         <OrbitControls 
           enableDamping 
           dampingFactor={0.05} 
           enableZoom={true}
           autoRotate={isMobile ? true : false}
-          autoRotateSpeed={isMobile ? 0.3 : 0}
+          autoRotateSpeed={isMobile ? 0.5 : 0}
         />
         
         <fog attach="fog" args={['#000000', 25, 40]} />

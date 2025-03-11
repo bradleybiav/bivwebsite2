@@ -10,10 +10,10 @@ interface BrainProps {
 }
 
 const Brain = ({ isMobile = false }: BrainProps) => {
-  // Significantly different position for mobile to ensure visibility
-  const basePosition: [number, number, number] = isMobile ? [0, 0, 0] : [0, 0.97, 0];
+  // Position adjustments for better visibility on both mobile and desktop
+  const basePosition: [number, number, number] = isMobile ? [0, 0, 0] : [0, 0, 0];
   const baseRotation: [number, number, number] = [0, 0, 0];
-  const baseScale = isMobile ? 2.5 : 4.5; // Larger scale for mobile
+  const baseScale = isMobile ? 2.5 : 3.0; // Balanced scale for both
 
   const brainRef = useRef<THREE.Group>();
   const materialRef = useRef<any>();
@@ -33,16 +33,16 @@ const Brain = ({ isMobile = false }: BrainProps) => {
     }
     
     if (brainRef.current) {
-      // Faster rotation for mobile for more visibility
-      brainRef.current.rotation.y += isMobile ? 0.02 : 0.003;
+      // Rotation speed adjusted for visibility
+      brainRef.current.rotation.y += isMobile ? 0.02 : 0.005;
       
-      // Adjust vertical position animation - smaller oscillation for mobile
+      // Adjust vertical position animation
       const time = clock.getElapsedTime();
-      const verticalOffset = Math.sin(time * 0.5) * (isMobile ? 0.1 : 0.2);
+      const verticalOffset = Math.sin(time * 0.5) * (isMobile ? 0.1 : 0.15);
       brainRef.current.position.y = basePosition[1] + verticalOffset;
       
-      // More pronounced breathing effect for mobile
-      const breathScale = 1 + Math.sin(time * 0.8) * (isMobile ? 0.05 : 0.02);
+      // Breathing effect
+      const breathScale = 1 + Math.sin(time * 0.8) * (isMobile ? 0.05 : 0.03);
       const finalScale = baseScale * breathScale;
       brainRef.current.scale.set(finalScale, finalScale, finalScale);
     }

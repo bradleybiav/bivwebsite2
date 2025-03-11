@@ -1,9 +1,8 @@
 
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { useFrame, useLoader } from '@react-three/fiber';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import * as THREE from 'three';
-import ScreamShaderMaterial from './ScreamShaderMaterial';
 
 interface BrainProps {
   onPositionChange?: (position: [number, number, number], rotation: [number, number, number], scale: number) => void;
@@ -11,7 +10,6 @@ interface BrainProps {
 
 const Brain: React.FC<BrainProps> = ({ onPositionChange }) => {
   const brainRef = useRef<THREE.Group>();
-  const materialRef = useRef<ScreamShaderMaterial>();
   const gltf = useLoader(GLTFLoader, './brainBBBBB.glb');
   
   // Updated values based on user's preferred position
@@ -19,26 +17,27 @@ const Brain: React.FC<BrainProps> = ({ onPositionChange }) => {
   const baseRotation: [number, number, number] = [0, 0, 0];
   const baseScale = 3.43;
   
-  // Create shader material outside the animation loop
+  // Create colorful material for the brain
   useEffect(() => {
     if (brainRef.current) {
-      const shaderMaterial = new ScreamShaderMaterial();
-      materialRef.current = shaderMaterial;
+      console.log("Applying materials to brain model");
       
       brainRef.current.traverse((child) => {
         if (child instanceof THREE.Mesh) {
-          // Apply the shader material to each mesh
-          child.material = shaderMaterial;
+          // Create a vibrant material that will definitely be visible
+          const material = new THREE.MeshPhongMaterial({
+            color: new THREE.Color(0.8, 0.2, 0.8),
+            emissive: new THREE.Color(0.2, 0.0, 0.3),
+            specular: new THREE.Color(1, 1, 1),
+            shininess: 100,
+            transparent: true,
+            opacity: 0.9,
+            side: THREE.DoubleSide
+          });
           
-          // Important: Enable transparency for the material
-          child.material.transparent = true;
-          child.material.side = THREE.DoubleSide;
-          
-          // Store original geometry normals if needed
-          if (!child.userData.originalNormals) {
-            const normals = child.geometry.attributes.normal.array;
-            child.userData.originalNormals = [...normals];
-          }
+          // Apply the material to the mesh
+          child.material = material;
+          console.log("Applied material to mesh:", child.name);
         }
       });
     }
@@ -46,21 +45,6 @@ const Brain: React.FC<BrainProps> = ({ onPositionChange }) => {
   
   // Animation loop
   useFrame(({ clock }) => {
-    if (materialRef.current) {
-      // Update shader uniforms for animation
-      materialRef.current.uniforms.time.value = clock.getElapsedTime();
-      materialRef.current.uniforms.seed.value = Math.sin(clock.getElapsedTime() / 3) * 3;
-      
-      // Animate color with more variance
-      const r = 0.5 + 0.5 * Math.sin(clock.getElapsedTime() / 7);
-      const g = 0.5 + 0.5 * Math.sin(clock.getElapsedTime() / 8);
-      const b = 0.5 + 0.5 * Math.sin(clock.getElapsedTime() / 5);
-      materialRef.current.uniforms.color.value.set(r, g, b);
-      
-      // Modify scale value for noise pattern size
-      materialRef.current.uniforms.scale.value = 1.0 + 0.2 * Math.sin(clock.getElapsedTime() / 10);
-    }
-    
     if (brainRef.current) {
       const time = clock.getElapsedTime();
       
@@ -74,6 +58,18 @@ const Brain: React.FC<BrainProps> = ({ onPositionChange }) => {
       const breathScale = baseScale / 3.5 + Math.sin(time * 0.8) * 0.02;
       const currentScale = baseScale * breathScale;
       brainRef.current.scale.set(currentScale, currentScale, currentScale);
+      
+      // Colorful animation
+      brainRef.current.traverse((child) => {
+        if (child instanceof THREE.Mesh && child.material instanceof THREE.MeshPhongMaterial) {
+          // Animate colors over time
+          const r = 0.5 + 0.5 * Math.sin(time / 2);
+          const g = 0.5 + 0.5 * Math.sin(time / 3);
+          const b = 0.5 + 0.5 * Math.sin(time / 4);
+          child.material.color.setRGB(r, g, b);
+          child.material.emissive.setRGB(r * 0.2, g * 0.2, b * 0.2);
+        }
+      });
       
       // Call the callback with current position and rotation
       if (onPositionChange) {
@@ -94,8 +90,8 @@ const Brain: React.FC<BrainProps> = ({ onPositionChange }) => {
     }
   });
 
-  // Add console logging to help debug
-  console.log("Brain model loaded:", gltf);
+  // Debug logging
+  console.log("Brain model loaded, object count:", gltf.scene.children.length);
 
   return (
     <primitive 

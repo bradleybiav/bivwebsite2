@@ -6,10 +6,10 @@ import * as THREE from 'three';
 import ScreamShaderMaterial from './ScreamShaderMaterial';
 
 const Brain = () => {
-  // Define base position, rotation and scale as requested
+  // Increase the scale to make the brain appear larger
   const basePosition: [number, number, number] = [0, 0.97, 0];
   const baseRotation: [number, number, number] = [0, 0, 0];
-  const baseScale = 3.43;
+  const baseScale = 6.0; // Increased from 3.43 to make it appear larger (equivalent to ~2 zooms)
 
   const brainRef = useRef<THREE.Group>();
   const materialRef = useRef<any>();
